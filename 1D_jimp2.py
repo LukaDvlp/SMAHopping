@@ -75,7 +75,7 @@ def main():
 	print(t)
 	print(XX)
 	print(Time)
-	T = np.arange(0, 10+0.2, 0.1)
+	T = np.arange(0, t_f+2*h, h)
 	print(T)
 
 	#x = odeint(func1, x0, t)
