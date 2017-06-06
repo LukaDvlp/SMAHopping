@@ -21,17 +21,26 @@ def func2(x, t):
     return [x[1], (k1/Mb)*(l0-(x[0]-x[2]))-g, x[3], (k1/Mp)*(l0-(x[0]-x[2])\
 	)-(k2/Mp)*(x[2]-Z20)-g]
 	
-def func_test(x):
-	return [x[3],x[2],x[1],x[0]]
+def motion_test(x):
+	return np.array([x[2],x[1],x[0]])
+
+def motion_test(x):
+	return np.array([x[1],-g])
 
 def main():
 	h = 0.1
 	t_s = 0.0
-	t_f = 5
+	t_f = 10.0 
 	t = 0
 	n = 0
-	XX = np.empty((0,3), float)
-	XX = np.append(XX, np.array([[1,2,3]]), axis=0)
+	m = 1
+	v0 = 10
+	H = 1
+	#Time = np.empty((0), float)
+	#Time = np.append(Time, np.array([[xH,v0]]), axis=0)
+	Time = []
+	XX = np.empty((0,2), float)
+	XX = np.append(XX, np.array([[H,v0]]), axis=0)
 #	XX = np.append(XX, np.array([[4,5,6]]), axis=0)
 	print(XX)
 	#print(XX[1])
@@ -44,19 +53,33 @@ def main():
 	#print(XX)
 	#XX(0,:) = [0,0,0,0] 
 	#B = np.array([1,1,1,1])
-	while t < t_f:
-			k1 = XX[n]
-			A = np.array([[n,n,n]])
-			XX = np.append(XX, A, axis=0)
-			#X(n+1,:) = XX(n,:) + B 
-			t = t+h
-			n = n+1
+	while (t < t_f):
+		k1 = motion_test(XX[n])
+	#	k1 = np.array([3.0,2.0,1.0])
+#		print(k1)
+	#	bb = 3.2*k1
+		k2 = motion_test(XX[n]+0.5*h*k1)
+		k3 = motion_test(XX[n]+0.5*h*k2)
+		k4 = motion_test(XX[n]+h*k3)
+		Step = XX[n] + (h/6)*(k1+2*k2+2*k3+k4)
+#		print(Step)
+		S = np.array([[Step[0],Step[1]]])
+#		A = np.array([[n,n,n]])
+		XX = np.append(XX, S, axis=0)
+		#X(n+1,:) = XX(n,:) + B 
+#		Time = Time + [t]
+		t = t+h
+		n = n+1
 
+	print(n)
+	print(t)
 	print(XX)
-	#t = np.arange(0, 10, 0.01)
+	print(Time)
+	T = np.arange(0, 10+0.2, 0.1)
+	print(T)
 
 	#x = odeint(func1, x0, t)
-	#X2 = func_test(x0)
+	#X2 = motion_test(x0)
 	#Z_cg = Mb/(Mb+Mp)*x[:,0]
 	#V_cg = Mb/(Mb+Mp)*x[:,1] 
 
@@ -73,9 +96,11 @@ def main():
 	#plt.plot(t,x[:,3], label="Velocity:Pad")
 	#plt.plot(t,Z_cg, label="Position:COG")
 	#plt.plot(t,V_cg, label="Velocity:COG")
+	plt.plot(T,XX[:,0], label="Positio")
+	plt.plot(T,XX[:,1], label="Velocity")
 	#ax = fig.gca(projection='3d')
 	#ax.plot(v[:, 0], v[:, 1], v[:, 2])
-	#plt.legend()
-	#plt.show()
+	plt.legend()
+	plt.show()
 if __name__ == '__main__':
 		main()
