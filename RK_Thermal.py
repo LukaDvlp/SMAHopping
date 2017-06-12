@@ -12,6 +12,7 @@ k2 = 10  #Spring Coefficient of the ground [N/mm]
 c2 = 10  #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
 DZ = 50    #Initial Deflextion of Bias Spring [mm]
+h = 0.1   #Interval of RK
 
 def func1(x):
     return [x[1], (k1/Mb)*(l0-(x[0]-x[2]))-g, x[3], (k1/Mp)*(l0-(x[0]-x[2])\
@@ -27,8 +28,16 @@ def motion_test(x):
 def motion_test(x):
 	return np.array([x[1],-g])
 
+def RK(x):
+	k1 = motion_test(x)
+	k2 = motion_test(x+0.5*h*k1)
+	k3 = motion_test(x+0.5*h*k2)
+	k4 = motion_test(x+h*k3)
+	x_ = x + (h/6)*(k1+2*k2+2*k3+k4)
+#	print(x_)
+	return x_
+
 def main():
-	h = 0.1
 	t_s = 0.0
 	t_f = 10.0 
 	t = 0
@@ -54,15 +63,16 @@ def main():
 	#XX(0,:) = [0,0,0,0] 
 	#B = np.array([1,1,1,1])
 	while (t < t_f):
-		k1 = motion_test(XX[n])
+	#	k1 = motion_test(XX[n])
 	#	k1 = np.array([3.0,2.0,1.0])
 #		print(k1)
 	#	bb = 3.2*k1
-		k2 = motion_test(XX[n]+0.5*h*k1)
-		k3 = motion_test(XX[n]+0.5*h*k2)
-		k4 = motion_test(XX[n]+h*k3)
-		Step = XX[n] + (h/6)*(k1+2*k2+2*k3+k4)
+	#	k2 = motion_test(XX[n]+0.5*h*k1)
+	#	k3 = motion_test(XX[n]+0.5*h*k2)
+	#	k4 = motion_test(XX[n]+h*k3)
+	#	Step = XX[n] + (h/6)*(k1+2*k2+2*k3+k4)
 #		print(Step)
+		Step = RK(XX[n])
 		S = np.array([[Step[0],Step[1]]])
 #		A = np.array([[n,n,n]])
 		XX = np.append(XX, S, axis=0)
@@ -83,6 +93,10 @@ def main():
 	#Z_cg = Mb/(Mb+Mp)*x[:,0]
 	#V_cg = Mb/(Mb+Mp)*x[:,1] 
 
+	print("This is for test")
+	print(XX[n])
+	print("Call RK function")
+	RK(XX[n])
 	#print(X2)
 	#print(np.max(V_cg))
 	#print(np.argmax(V_cg))
