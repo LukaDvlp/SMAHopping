@@ -54,7 +54,7 @@ def RK(x):
 	k3 = motion_test(x+0.5*h*k2)
 	k4 = motion_test(x+h*k3)
 	x_ = x + (h/6)*(k1+2*k2+2*k3+k4)
-#	print(x_)
+	print(x_)
 	return x_
 	
 def Cal_Mtlx(X0, t_s, t_f, l):
@@ -65,11 +65,12 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 	while(t<t_f):
 			Step = RK(XX[n])
 			S = np.array([[Step[0],Step[1]]])
+			#S = np.array(Step)
 			XX = np.append(XX, S, axis=0)
 			t = t+h
 			n = n+1
 	
-	return XX
+	return np.matrix(XX)
 
 def main():
 	t_s = 0.0
@@ -80,6 +81,10 @@ def main():
 	v0 = 10
 	H = 1
 	X0 = [H,v0]
+	print(X0)
+	print("This is for test")
+	print(RK(X0))
+	print(RK(X0)[1])
 	XX = Cal_Mtlx(X0, t_s, t_f, 2)
 	#Time = np.empty((0), float)
 	#Time = np.append(Time, np.array([[xH,v0]]), axis=0)
@@ -119,7 +124,7 @@ def main():
 
 	print(n)
 	print(t)
-	print(XX)
+#	print(XX)
 	print(Time)
 	T = np.arange(0, t_f+2*h, h)
 	print(T)
@@ -129,10 +134,10 @@ def main():
 	#Z_cg = Mb/(Mb+Mp)*x[:,0]
 	#V_cg = Mb/(Mb+Mp)*x[:,1] 
 
-	print("This is for test")
-	print(XX[n])
-	print("Call RK function")
-	RK(XX[n])
+#	print("This is for test")
+#	print(XX[n])
+#	print("Call RK function")
+#	RK(XX[n])
 	#print(X2)
 	#print(np.max(V_cg))
 	#print(np.argmax(V_cg))
