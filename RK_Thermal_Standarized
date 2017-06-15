@@ -13,7 +13,7 @@ k2 = 10  #Spring Coefficient of the ground [N/mm]
 c2 = 10  #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
 DZ = 50    #Initial Deflextion of Bias Spring [mm]
-h = 0.1   #Interval of RK
+h = 0.01   #Interval of RK
 d = 1    #Diameter of SMA wire [mm]
 D = 6.8  #Diameter of SMA coil [mm]
 n = 10   #Number of coil spring
@@ -37,15 +37,15 @@ m = rho*(math.pi*(0.5*d))**2*D*n #Mass of a SMA spring [g]
 print("Mass of SMA[g]")
 print(m)
 #m = 1
-c = 440*10**-3  #Specific heat capacity of SMA spring [J/gK]
-#c = 500 
+#c = 440*10**-3  #Specific heat capacity of SMA spring [J/gK]
+c = 5000 
 Sc = 1366*10**-6 #Solar constant [W/mm^2]
 #Sc = 1
 delta = 5.67*10**-2 #Stefan-Boltzman constant [W/mm^2K^4]
 #delta = 1
 a = 0.07 #Albedo constant
 #a = 1
-Tg = 100 + 273.0 #Temperature of the ground[K]
+Tg = 200 + 273.0 #Temperature of the ground[K]
 #Tg = 1
 epsilon = 0.6 #Emissivity of the ground
 TB = 50 + 273.0
@@ -55,7 +55,7 @@ aB = 1
 AB = 1
 #ThetaB = 1
 ScB = 1
-cB = 1
+cB = 1 
 #epsilonB = 1
 deltaB = 1
 m_ = m/mB
@@ -81,19 +81,24 @@ def motion_test(x):
 	return np.array([x[1],-g])
 
 def ThermalEq1(x): #where Tg >= Tb
-	value1 = A*math.cos(math.radians(Theta_L))*Sc/(m*c)
+	value1 = (AB*ScB/mB/cB)*A_*math.cos(math.radians(Theta_L))*Sc_/(m_*c_)
 	print("value1")
 	print(value1)
-	value2 = a*A*math.cos(math.radians(Theta_L))*Sc/(m*c)
+	value2 = (aB*AB*ScB/mB/cB)*a_*A_*math.cos(math.radians(Theta_L))*Sc_/(m_*c_)
 	print("value2")
 	print(value2)
-	value3 = epsilon*delta*A*(Tg**4-x[0]**4)/(2*m*c)
-	print"(Tg/TB)**4 = {0}" 
+	value3 = epsilon*(deltaB*AB/mB/cB)*delta_*A_*((Tg/TB)**4-(x[0])**4)/(2*m_*c_)
+	print"Tb = {0}".format(x[0])
+	print"Tg = {0}".format(Tg)
+	print"TB = {0}".format(TB) 
+	print"(Tg/TB)**4 = " 
 	print(Tg/TB)
-	print"(Tb/TB)**4 = {0}".format((x[0]/TB)**4)
+	print"(Tb/TB)**4"
+	print(x[0]/TB)
 	print("value3")
 	print(value3)
-	value4 = delta*AA*(x[0]**4-4**4)/(m*c)
+	#value4 = (deltaB*AB/mB/cB)*delta_*AA_*(x[0]**4-(4/TB)**4)/(m_*c_)
+	value4 = (deltaB*AB/mB/cB)*delta_*A_*(x[0]**4-(4/TB)**4)/(m_*c_)
 #	value4 = delta*A*((x[0]/TB)**4-(4/TB)**4)/(m*c)
 	print("value4")
 	print(value4)
@@ -111,12 +116,13 @@ def ThermalEq2(x):   #where Tb > Tg
 	value3 = delta*A*((x[0])**2 + (Tg)**2)*((x[0])**2 - (Tg)**2)/(2*m*c)
 	print("value3")
 	print(value3)
-	value4 = delta*AA*((x[0]/TB)**4-(4/TB)**4)/(m*c)
+	#value4 = delta*AA*((x[0]/TB)**4-(4/TB)**4)/(m*c)
+	value4 = delta*A*((x[0]/TB)**4-(4/TB)**4)/(m*c)
 	#value4 = delta*AA*((x[0]/TB)**4-(4/TB)**4)/(m*c)
 	print("value4")
 	print(value4)
-#	q = value1 + value2 - value3 - value4 
-	q = value1 - value3 - value4
+	q = value1 + value2 - value3 - value4 
+	#q = value1 - value3 - value4
 	return q
 
 '''	
@@ -176,11 +182,11 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 10.0 
+	t_f = 300.0 
 	t = 0
 	n = 0
 	m = 1
-	X0 = [(80+273)/TB]
+	X0 = [(260)/TB]
 	print(X0)
 	XX = Cal_Mtlx(X0, t_s, t_f, 1)
 	Time = []
