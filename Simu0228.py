@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import integrate
 
+def getNearestValue(list, num):
+	idx = np.abs(np.asarray(list) - num).argmin()
+	return idx
+
 def CalE():
 	if  delta_AE<delta_s+X0_SMA and X_1<delta_s+X0_SMA: 
 		(E,X) = (integrate.quad(lambda x:-k*x+k*X0, delta_AE, X_1)[0] \
@@ -57,11 +61,11 @@ m = 0.7
 Theta = 30.0
 number = 2 
 n = 15 
-D = 6.0  #Diameter of Coil[mm]
-d = 1.0  #Diameter of Wire[mm]
+D = 6.2  #Diameter of Coil[mm]
+d = 1.2  #Diameter of Wire[mm]
 solid_height = d*n ##solid height of SMA spring[mm]
-k = 1.03 
-X0 = 60 
+k = 1.4 
+X0 = 100 
 X0_SMA = solid_height 
 #X0_SMA = 45             #Natural Height of SMA[mm]
 N_PLOT_MAX = k*X0 
@@ -85,7 +89,8 @@ delta_s = A*F_s                            #Unit of delta_s is delta
 delta_f = A*F_f + np.pi*D**2*n/d*gamma_l   #Unit of delta_f is delta
 #xi = 0.5*np.cos(np.pi/(tau_s-tau_f)*(tau-tau_f)) + 0.5
 #F_ = np.pi*d**3/8/D*Gm*gamma_l*xi 
-F_ME = (X0-H-X0_SMA)/(A+1/k)
+#F_ME = (X0-H-X0_SMA)/(A+1/k)
+#F_ME = k*X0-k*delta_ME 
 F_AE = (X0-X0_SMA)/(B+1/k)
 #delta_ME = -F_ME/k + X0 #Unit of delta_ME is X
 delta_AE = -F_AE/k + X0 #Unit of delta_AE is X
@@ -106,6 +111,7 @@ X_3 = (KM*X0_SMA+k*X0-b2)/(KM+k)
 E = 0.0
 X = 0.0
 E,delta_ME = CalE()
+F_ME = k*X0-k*delta_ME 
 distance_X = 2*E*np.sin(2*Theta/360*2*np.pi)/m/g
 distance_Y = E*np.sin(Theta/360*2*np.pi)/m/g
 Efficiency = E/Q/1000 * 100
@@ -176,16 +182,59 @@ del_m = delta[0:i]
 del_a = delta_a[0:i]
 del_b = delta_bi[0:i]
 
-plt.plot(del_m,Force, label="Martensite")
-plt.plot(del_a,Force, label="Autenite")
-plt.plot(del_b,Force, label="Bias Spring")
+print"del_m"
+print(del_m)
+print"del_a"
+print(del_a)
 
-plt.title('Force-Deflection curve')
-plt.xlabel('Length [mm]')
-plt.ylabel('Force [N]')
+print"Aquisit the argument i of del_a nearest to delta_AE"
+print(getNearestValue(del_a, delta_AE))
+#print(Force[0:30])
+print"Force[i]"
+print(Force[getNearestValue(del_a, delta_AE)])
+print"Aquisit the argument k of del_m nearest to delta_AE"
+print(getNearestValue(del_m, delta_AE))
+print"Force[k]"
+print(Force[getNearestValue(del_m, delta_AE)])
+#print(del_m[0:30])
+#print(getNearestValue(Force, 0.2))
 
-plt.xlim([0,X0])
-#plt.plot(F,delta)
-#plt.plot(F,delta_a)
-#plt.plot(F,delta_bi)
+NN = 0
+KK = 0
+LL = 0.1
+N = np.empty((0,1), float)
+Del = np.empty((0,1), float)
+while(delta_AE+LL*NN<=delta_ME):
+		N=np.append(N, np.array([[F[getNearestValue(del_b, delta_AE+LL*NN)] - F[getNearestValue(del_m, delta_AE+LL*NN)]]]), axis=0)
+		Del=np.append(Del,np.array([[delta_AE+LL*NN]]), axis=0) 
+		NN = NN+1	
+		
+print(Del)
+print(N)
+
+fig, (axL, axR) = plt.subplots(ncols=2, figsize=(10,4))
+axL.plot(del_m,Force, label="Martensite", color='black')
+axL.plot(del_a,Force, label="Autenite")
+axL.plot(del_b,Force, label="Bias Spring")
+#plt.plot(del_m,Force, label="Martensite", color='black')
+#plt.plot(del_a,Force, label="Autenite")
+#plt.plot(del_b,Force, label="Bias Spring")
+#
+#plt.title('Force-Deflection curve')
+#axL.title('Force-Deflection curve')
+#plt.xlabel('Length [mm]')
+#axL.xlabel('Length [mm]')
+#plt.ylabel('Force [N]')
+#axL.ylabel('Force [N]')
+#plt.xlim([0,X0])
+axL.set_xlim([0,X0])
+#axL.legend()
+##plt.plot(F,delta)
+##plt.plot(F,delta_a)
+##plt.plot(F,delta_bi)
+#plt.show()
+#
+#plt.plot(Del[:,0],N[:,0], label="Martensite", color='black')
+axR.plot(Del[:,0],N[:,0], label="Martensite", color='black')
 plt.show()
+#fig.show()
