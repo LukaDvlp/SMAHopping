@@ -28,24 +28,26 @@ A = math.pi*r**2 #Cross section of the pseudo sphere of SMA[mm^2]
 print("Cross section of SMA pseudo sphere [mm^2]")
 print(A)
 #A = 1
-AA = 4*math.pi*r**2 #Surface are of SMA pseudo sphere [mm^2]
+#AA = 4*math.pi*r**2 #Surface are of SMA pseudo sphere [mm^2]
+AA = A
 print("Surface area of SMA pseudo sphere [mm^2]")
 print(AA)
 #AA = 1
-Theta_L = 45  #Lattitude [deg]
+Theta_L = 90  #Lattitude [deg]
 m = rho*(math.pi*(0.5*d))**2*D*n #Mass of a SMA spring [g]
 print("Mass of SMA[g]")
 print(m)
 #m = 1
 #c = 440*10**-3  #Specific heat capacity of SMA spring [J/gK]
-c = 0.5 
+c = 44 #Specific heat capacity of SMA spring [J/gK]
+#c = 440 
 Sc = 1366*10**-6 #Solar constant [W/mm^2]
 #Sc = 1
 delta = 5.67*10**-2 #Stefan-Boltzman constant [W/mm^2K^4]
 #delta = 1
 a = 0.07 #Albedo constant
 #a = 1
-Tg = 200 + 273.0 #Temperature of the ground[K]
+Tg = 0 + 273.0 #Temperature of the ground[K]
 #Tg = 1
 epsilon = 0.6 #Emissivity of the ground
 TB = 50 + 273.0
@@ -98,7 +100,7 @@ def ThermalEq1(x): #where Tg >= Tb
 	print("value3")
 	print(value3)
 	#value4 = (deltaB*AB/mB/cB)*delta_*AA_*(x[0]**4-(4/TB)**4)/(m_*c_)
-	value4 = (deltaB*AB/mB/cB)*delta_*A_*(x[0]**4-(4/TB)**4)/(m_*c_)
+	value4 = (deltaB*AB/mB/cB)*delta_*AA_*(x[0]**4-(4/TB)**4)/(m_*c_)
 #	value4 = delta*A*((x[0]/TB)**4-(4/TB)**4)/(m*c)
 	print("value4")
 	print(value4)
@@ -107,17 +109,21 @@ def ThermalEq1(x): #where Tg >= Tb
 	return q
 
 def ThermalEq2(x):   #where Tb > Tg
-	value1 = A*math.cos(math.radians(Theta_L))*Sc/(m*c)
+	#value1 = A*math.cos(math.radians(Theta_L))*Sc/(m*c)
+	value1 = (AB*ScB/mB/cB)*A_*math.cos(math.radians(Theta_L))*Sc_/(m_*c_)
 	print("value1")
 	print(value1)
-	value2 = a*A*math.cos(math.radians(Theta_L))*Sc/(m*c)
+	#value2 = a*A*math.cos(math.radians(Theta_L))*Sc/(m*c)
+	value2 = (aB*AB*ScB/mB/cB)*a_*A_*math.cos(math.radians(Theta_L))*Sc_/(m_*c_)
 	print("value2")
 	print(value2)
-	value3 = delta*A*((x[0])**2 + (Tg)**2)*((x[0])**2 - (Tg)**2)/(2*m*c)
+	#value3 = delta*A*((x[0])**2 + (Tg)**2)*((x[0])**2 - (Tg)**2)/(2*m*c)
+	value3 = (deltaB*AB/mB/cB)*delta_*A_*(-(Tg/TB)**4+(x[0])**4)/(m_*c_)
 	print("value3")
 	print(value3)
 	#value4 = delta*AA*((x[0]/TB)**4-(4/TB)**4)/(m*c)
-	value4 = delta*A*((x[0]/TB)**4-(4/TB)**4)/(m*c)
+	value4 = (deltaB*AB/mB/cB)*delta_*AA_*(x[0]**4-(4/TB)**4)/(m_*c_)
+	#value4 = delta*A*((x[0]/TB)**4-(4/TB)**4)/(m*c)
 	#value4 = delta*AA*((x[0]/TB)**4-(4/TB)**4)/(m*c)
 	print("value4")
 	print(value4)
@@ -182,11 +188,11 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 2.0 
+	t_f = 60.0 
 	t = 0
 	n = 0
 	m = 1
-	X0 = [(260)/TB]
+	X0 = [(80 + 273)/TB]
 	print(X0)
 	XX = Cal_Mtlx(X0, t_s, t_f, 1)
 	Time = []
@@ -194,8 +200,12 @@ def main():
 	print(XX)
 	T = np.arange(0, t_f+2*h, h)
 	print(T)
+	print(m)
+	T = 0.01*T
 
-	plt.plot(T,XX[:,0], label="Positio")
+	plt.plot(T,XX[:,0], label="Temperature of SMA")
+	plt.xlabel("Time [s]")
+	plt.ylabel("Temperature[K]")
 	plt.legend()
 	plt.show()
 

@@ -144,6 +144,7 @@ F = np.zeros(ELEMENTS,np.float64)
 delta_a = np.zeros(ELEMENTS, np.float64)
 delta_bi = np.zeros(ELEMENTS, np.float64)
 i=0
+delta_AE = 52.5
 while i<ELEMENTS:
 		F[i] = GRANULARITY*i
 		#tau[i] = 8*D/np.pi/d**3 *F[i-1]
@@ -157,11 +158,10 @@ while i<ELEMENTS:
 		elif F[i] < F_f:		 
 				delta[i] = A*F[i]+np.pi*D**2*n/d*gamma_l*\
 				(0.5*np.cos(np.pi/(tau_s-tau_f)*(8*D/np.pi/d**3*F[i]-tau_f))+0.5)+X0_SMA
-				delta_m_new[i] = A*F[i]+np.pi*D**2*n/d*gamma_l*\
-					(0.5*np.cos(np.pi/(tau_s-tau_f)*(8*D/np.pi/d**3*F[i]-tau_f))+0.5)+delta_AE
-				#else:
-				#		delta_m_new[i] = A*F[i] + H_ +delta_AE
-
+				if abs(delta[i-1]-delta_m_new[i-1]) > 0.1:
+					delta_m_new[i] = A*F[i]+delta_AE
+				else:		
+					delta_m_new[i] = delta[i] 
 				delta_a[i] = B*F[i]+X0_SMA
 				delta_bi[i] = -F[i]/k+X0
 				i += 1
@@ -218,7 +218,7 @@ LL = 0.1
 N = np.empty((0,1), float)
 Del = np.empty((0,1), float)
 while(delta_AE+LL*NN<=delta_ME):
-		N=np.append(N, np.array([[F[getNearestValue(del_b, delta_AE+LL*NN)] - F[getNearestValue(del_m, delta_AE+LL*NN)]]]), axis=0)
+		N=np.append(N, np.array([[F[getNearestValue(del_b, delta_AE+LL*NN)] - F[getNearestValue(del_m_, delta_AE+LL*NN)]]]), axis=0)
 		Del=np.append(Del,np.array([[delta_AE+LL*NN]]), axis=0) 
 		NN = NN+1	
 		
@@ -226,20 +226,20 @@ print(Del)
 print(N)
 
 fig, (axL, axR) = plt.subplots(ncols=2, figsize=(10,4))
-axL.plot(del_m,Force, label="Martensite", color='black')
+axL.plot(del_m,Force, label="Martensite", color='black', linestyle=":")
 axL.plot(del_a,Force, label="Autenite")
 axL.plot(del_b,Force, label="Bias Spring")
-axL.plot(del_m_,Force, label="Martensite Actual")
+axL.plot(del_m_,Force, label="Martensite Actual" )
 #plt.plot(del_m,Force, label="Martensite", color='black')
 #plt.plot(del_a,Force, label="Autenite")
 #plt.plot(del_b,Force, label="Bias Spring")
 #
 #plt.title('Force-Deflection curve')
-#axL.title('Force-Deflection curve')
+axL.set_title('Force-Deflection curve')
 #plt.xlabel('Length [mm]')
-#axL.xlabel('Length [mm]')
+axL.set_xlabel('Length [mm]')
 #plt.ylabel('Force [N]')
-#axL.ylabel('Force [N]')
+axL.set_ylabel('Force [N]')
 #plt.xlim([0,X0])
 axL.set_xlim([0,X0])
 #axL.legend()
@@ -250,5 +250,9 @@ axL.set_xlim([0,X0])
 #
 #plt.plot(Del[:,0],N[:,0], label="Martensite", color='black')
 axR.plot(Del[:,0],N[:,0], label="Martensite", color='black')
+axR.set_title('Force-Deflection curve')
+axR.set_xlabel('Deformation [mm]')
+axR.set_ylabel('Force [N]')
+axR.set_xlim([delta_AE,delta_ME])
 plt.show()
 #fig.show()
