@@ -6,14 +6,18 @@ from mpl_toolkits.mplot3d import Axes3D
 
 M1 = 0.65  #Mass of Body [Kg]
 M2 = 0.05 #Mass of Pad [Kg]
+M3 = 0.05 #Mass of Pad2 [Kg]
 g = 1.622  #Gravitational Acceleration [m/s^2] 
 k1 = 1400   #Bias Spring Coefficient [N/m]
 c1 = 1  #Damping Coefficient of Spring [Ns/mm] 
-l0 = 0.1  #Natural Length of Bias Spring [m]
-k2 = 2000  #Spring Coefficient of the ground [N/mm]
-c2 = 1000 #Damping Coefficient [Ns/mm]
+l01 = 0.1  #Natural Length of Bias Spring1 [m]
+l02 = 0.1  #Natural Length of Bias Spring2 [m]
+k2 = 0.7  #Spring Coefficient of the ground [N/mm]
+c2 = 1 #Damping Coefficient [Ns/mm]
+kg = 2000  #Spring Coefficient of the ground [N/mm]
+cg = 1000 #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
-DZ = 0.00    #Initial Deflextion of Bias Spring [mm]
+DZ = 0.05    #Initial Deflextion of Bias Spring [mm]
 h = 0.00002   #Interval of RK
 d = 1    #Diameter of SMA wire [mm]
 D = 6.8  #Diameter of SMA coil [mm]
@@ -38,32 +42,29 @@ def func_test(x):
 	return np.array([x[1],term1])
 
 def test_func2(x):
-	term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
+	term1 = k1/M1*(l01-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
 	print"term1 = {0}".format(term1)
-	term2 = -k1/M2*(l0-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3] - g
+	term2 = -k1/M2*(l01-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) + k2/M2*(l02-(x[2]-x[4])) - c2/M2*(x[3]-x[5]) - g
 	print"term2 = {0}".format(term2)
-	return np.array([x[1], term1, x[3], term2]) 
+	term3 = -k2/M3*(l02-(x[2]-x[4])) + c2/M2*(x[3]-x[5]) -kg/M3*x[4]- c2/M3*x[5] -g
+	return np.array([x[1], term1, x[3], term2, x[5], term3]) 
 	
-def test_func2_(x):
-	term1 = -k1/M1*(x[0]-x[2]) - c1/M1*(x[1]-x[3])
-	print"term1 = {0}".format(term1)
-	term2 = k1/M2*(x[0]-x[2]) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3]
-	print"term2 = {0}".format(term2)
-	return np.array([x[1], term1, x[3], term2]) 
 
 def test_func3(x):
-	term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
+	term1 = k1/M1*(l01-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
 	print"term1 = {0}".format(term1)
-	term2 = -k1/M2*(l0-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - g
+	term2 = -k1/M2*(l01-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) + k2/M2*(l02-(x[2]-x[4])) - c2/M2*(x[3]-x[5]) - g
 	print"term2 = {0}".format(term2)
-	return np.array([x[1], term1, x[3], term2]) 
+	term3 = -k2/M3*(l02-(x[2]-x[4])) + c2/M2*(x[3]-x[5]) -kg/M3*x[4] -g
+	return np.array([x[1], term1, x[3], term2, x[5], term3]) 
 
 def test_func4(x):
-	term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) -g
+	term1 = k1/M1*(l01-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
 	print"term1 = {0}".format(term1)
-	term2 = -k1/M2*(l0-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) -g
+	term2 = -k1/M2*(l01-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) + k2/M2*(l02-(x[2]-x[4])) - c2/M2*(x[3]-x[5]) - g
 	print"term2 = {0}".format(term2)
-	return np.array([x[1], term1, x[3], term2]) 
+	term3 = -k2/M3*(l02-(x[2]-x[4])) + c2/M2*(x[3]-x[5]) -g
+	return np.array([x[1], term1, x[3], term2, x[5], term3]) 
 
 def motion_test(x):
 	return np.array([x[1],-g])
@@ -79,7 +80,7 @@ def RK(x, f):
 	
 def Cal_Mtlx(X0, t_s, t_f, l):
 	XX = np.empty((0,l), float)
-	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3]]]), axis=0)
+	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3],X0[4],X0[5]]]), axis=0)
 	#XX = np.append(XX, np.array([[X0[0],X0[1]]]), axis=0)
 	t = t_s
 	n = 0
@@ -87,7 +88,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 			if XX[n,2]<0 and XX[n,3]<0:
 			#if 1>0:
 				Step = RK(XX[n], test_func2)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5]]])
 				#S = np.array([[Step[0],Step[1]]])
 				#S = np.array(Step)
 				XX = np.append(XX, S, axis=0)
@@ -99,7 +100,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 				n = n+1
 			elif XX[n,2]<0 and XX[n,3]>=0:
 				Step = RK(XX[n], test_func3)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5]]])
 				#S = np.array([[Step[0],Step[1]]])
 				#S = np.array(Step)
 				XX = np.append(XX, S, axis=0)
@@ -111,7 +112,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 				n = n+1
 			else:	
 				Step = RK(XX[n], test_func4)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5]]])
 				#S = np.array([[Step[0],Step[1]]])
 				#S = np.array(Step)
 				XX = np.append(XX, S, axis=0)
@@ -127,13 +128,13 @@ def main():
 	t_f = 2.0 
 	v0 = 10
 	H = 1
-	X0 = [l0-DZ,0,0.0,0]
+	X0 = [l01+l02-DZ,0,l02,0,0,0]
 	#X0 = [l0-0.05,0]
 	#Time = []
 	print(X0)
 #	print(RK(X0))
 #	print(RK(X0)[1])
-	XX = Cal_Mtlx(X0, t_s, t_f, 4)
+	XX = Cal_Mtlx(X0, t_s, t_f, 6)
 	print(XX)
 
 	#print(Time)
@@ -145,6 +146,8 @@ def main():
 	plt.plot(T,XX[:,1], label="Velocity of X1")
 	plt.plot(T,XX[:,2], label="Position of X2")
 	plt.plot(T,XX[:,3], label="Velocity of X2")
+	plt.plot(T,XX[:,4], label="Position of X3")
+	plt.plot(T,XX[:,5], label="Velocity of X4")
 	#ax = fig.gca(projection='3d')
 	#ax.plot(v[:, 0], v[:, 1], v[:, 2])
 	plt.legend()
