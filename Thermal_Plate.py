@@ -41,7 +41,7 @@ epsilon = 0.6 #Emissivity of the ground
 deltaB = 1
 #Sb = 0.02*0.02  #Area of heat sink [m^2] 
 Sb = 0.03*0.03  #Area of heat sink [m^2] 
-theta = 45 #angle of hopping leg 
+theta = 90 #angle of hopping leg 
 Fb_g = 0.5*(1+math.cos(math.radians(theta)))
 Fb_s = 0.5*(1-math.cos(math.radians(theta)))
 alpha = 1.0 #Emissivity of heat sink
@@ -156,7 +156,7 @@ def Cal_Mtlx(X0, t_s, t_f, l, Tg):
 
 def main():
 	t_s = 0.0
-	t_f = 1000.0 
+	t_f = 2000.0 
 	t = 0
 	n = 0
 	X0 = [80+273]
@@ -174,8 +174,8 @@ def main():
 	Time = []
 	print(XX1)
 	print(XX2)
-	#T = np.arange(0, t_f+2*h, h)
-	T = np.arange(0, t_f+h, h)
+	T = np.arange(0, t_f+2*h, h)
+	#T = np.arange(0, t_f+h, h)
 	#T = 0.01*T
 	print(T)
 	print("mass of SMA={0}".format(m))
@@ -191,6 +191,10 @@ def main():
 	plt.plot(T,XX3[:,0], label="Tg:323[K]")
 	plt.plot(T,XX4[:,0], label="Tg:293[K]")
 	plt.plot(T,XX5[:,0], label="Tg:273[K]")
+	plt.xlabel('Time [s]')
+	plt.ylabel('Temperature [s]')
+	plt.title('Thermal change of SMA')
+	plt.xlim([0,t_f])
 	plt.legend()
 	plt.show()
 
