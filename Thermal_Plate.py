@@ -33,14 +33,15 @@ delta = 5.67*10**-8 #Stefan-Boltzman constant [W/m^2K^4]
 #delta = 1
 a = 0.07 #Albedo constant
 #a = 1
-Tg = 80 + 273.0 #Temperature of the ground[K]
+#Tg = 120 + 273.0 #Temperature of the ground[K]
 #Tg = 1
 epsilon = 0.6 #Emissivity of the ground
 #ThetaB = 1
 #epsilonB = 1
 deltaB = 1
-Sb = 0.02*0.02  #Area of heat sink [m^2] 
-theta = 30 #angle of hopping leg 
+#Sb = 0.02*0.02  #Area of heat sink [m^2] 
+Sb = 0.03*0.03  #Area of heat sink [m^2] 
+theta = 45 #angle of hopping leg 
 Fb_g = 0.5*(1+math.cos(math.radians(theta)))
 Fb_s = 0.5*(1-math.cos(math.radians(theta)))
 alpha = 1.0 #Emissivity of heat sink
@@ -98,7 +99,8 @@ def T_Eq2(x):   #Where Tg>Tb, with plate
 	value2 = Sb*Fb_s*alpha*delta*(x[0]**4-4**4)/(m*c)
 	print("value1={0}".format(value1))
 	print("value2={0}".format(value2))
-	q = value1-value2
+	q = -value1-value2
+	return q
 
 def RK(x,f):  
 	k1 = f(x)
@@ -154,24 +156,32 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 6000.0 
+	t_f = 1000.0 
 	t = 0
 	n = 0
 	X0 = [80+273]
 	print(X0)
-	XX = Cal_Mtlx(X0, t_s, t_f, 1)
+	Tg = 120+273
+	XX1 = Cal_Mtlx(X0, t_s, t_f, 1)
+	Tg = 50+273
+	XX2 = Cal_Mtlx(X0, t_s, t_f, 1)
 	Time = []
-	print(XX)
-	T = np.arange(0, t_f+2*h, h)
-	#T = np.arange(0, t_f+h, h)
+	print(XX1)
+	print(XX2)
+	#T = np.arange(0, t_f+2*h, h)
+	T = np.arange(0, t_f+h, h)
 	#T = 0.01*T
 	print(T)
 	print("mass of SMA={0}".format(m))
 	print("Length of T = {0}".format(len(T)))
-	print("size of XX")
-	rows, cols = XX.shape
-	print(rows,cols)
-	plt.plot(T,XX[:,0], label="Temperature of SMA")
+	print("size of XX1")
+	rows1, cols1 = XX1.shape
+	print(rows1,cols1)
+	print("size of XX2")
+	rows2, cols2 = XX2.shape
+	print(rows2,cols2)
+	plt.plot(T,XX1[:,0], label="Tg:393[K]")
+	plt.plot(T,XX2[:,0], label="Tg:373[K]")
 	plt.legend()
 	plt.show()
 
