@@ -1,8 +1,7 @@
 import numpy as np
 import math
-from scipy.integrate import odeint
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+import Simu0619
 
 M1 = 0.65  #Mass of Body [Kg]
 M2 = 0.05 #Mass of Pad [Kg]
@@ -14,43 +13,18 @@ k2 = 2000  #Spring Coefficient of the ground [N/mm]
 c2 = 200 #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
 DZ = 0.05    #Initial Deflextion of Bias Spring [mm]
-h = 0.00002   #Interval of RK
-d = 1    #Diameter of SMA wire [mm]
-D = 6.8  #Diameter of SMA coil [mm]
-n = 10   #Number of coil spring
-
-def func1(x):
-    return np.array([x[1], (k1/Mb)*(l0-(x[0]-x[2]))-g, x[3], (k1/Mp)*(l0-(x[0]-x[2])\
-	)-(k2/Mp)*(x[2]-Z20)-(c2/Mp)*x[3]-g])
-
-def func2(x, t):
-    return [x[1], (k1/Mb)*(l0-(x[0]-x[2]))-g, x[3], (k1/Mp)*(l0-(x[0]-x[2])\
-	)-(k2/Mp)*(x[2]-Z20)-g]
-	
-def func3(x, t):
-    return [x[1], (k1/Mb)*(l0-(x[0]-x[2]))-g, x[3], (k1/Mp)*(l0-(x[0]-x[2])\
-	)-g]
-
-def func_test(x):
-	term1 = -k1/Mb*x[0] - c1/Mb*x[1] + k1/Mb*l0
-	print"term1 = {0}".format(term1)
-    #return np.array([x[1],term1])
-	return np.array([x[1],term1])
+h = 0.0002   #Interval of RK
+A = 1/Simu0619.A
+print(Simu0619.n)
 
 def test_func2(x):
-	term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
+	#term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
+	term1 = (k1*(l0-(x[0]-x[2]))-A*((x[0]-x[2])-del_AE))/M1 - c1/M1*(x[1]-x[3]) - g
 	print"term1 = {0}".format(term1)
 	term2 = -k1/M2*(l0-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3] - g
 	print"term2 = {0}".format(term2)
 	return np.array([x[1], term1, x[3], term2]) 
 	
-def test_func2_(x):
-	term1 = -k1/M1*(x[0]-x[2]) - c1/M1*(x[1]-x[3])
-	print"term1 = {0}".format(term1)
-	term2 = k1/M2*(x[0]-x[2]) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3]
-	print"term2 = {0}".format(term2)
-	return np.array([x[1], term1, x[3], term2]) 
-
 def test_func3(x):
 	term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
 	print"term1 = {0}".format(term1)

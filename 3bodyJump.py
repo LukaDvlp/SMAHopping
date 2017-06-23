@@ -4,7 +4,7 @@ from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-M1 = 0.65  #Mass of Body [Kg]
+M1 = 0.60  #Mass of Body [Kg]
 M2 = 0.05 #Mass of Pad [Kg]
 M3 = 0.05 #Mass of Pad2 [Kg]
 g = 1.622  #Gravitational Acceleration [m/s^2] 
@@ -12,13 +12,13 @@ k1 = 1400   #Bias Spring Coefficient [N/m]
 c1 = 1  #Damping Coefficient of Spring [Ns/mm] 
 l01 = 0.1  #Natural Length of Bias Spring1 [m]
 l02 = 0.1  #Natural Length of Bias Spring2 [m]
-k2 = 0.7  #Spring Coefficient of the ground [N/mm]
+k2 = 200000  #Spring Coefficient of the ground [N/mm]
 c2 = 1 #Damping Coefficient [Ns/mm]
 kg = 2000  #Spring Coefficient of the ground [N/mm]
-cg = 1000 #Damping Coefficient [Ns/mm]
+cg = 200 #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
 DZ = 0.05    #Initial Deflextion of Bias Spring [mm]
-h = 0.00002   #Interval of RK
+h = 0.0001   #Interval of RK
 d = 1    #Diameter of SMA wire [mm]
 D = 6.8  #Diameter of SMA coil [mm]
 n = 10   #Number of coil spring
@@ -85,7 +85,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 	t = t_s
 	n = 0
 	while(t<t_f):
-			if XX[n,2]<0 and XX[n,3]<0:
+			if XX[n,4]<0 and XX[n,5]<0:
 			#if 1>0:
 				Step = RK(XX[n], test_func2)
 				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5]]])
@@ -98,7 +98,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 				#print"term2 = {0}".format(term2)
 				t = t+h
 				n = n+1
-			elif XX[n,2]<0 and XX[n,3]>=0:
+			elif XX[n,4]<0 and XX[n,5]>=0:
 				Step = RK(XX[n], test_func3)
 				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5]]])
 				#S = np.array([[Step[0],Step[1]]])
@@ -139,17 +139,24 @@ def main():
 
 	#print(Time)
 	T = np.arange(0, t_f+2*h, h)
+#	T = (1/1000)*T 
 #	print(T)
 
 
 	plt.plot(T,XX[:,0], label="Position of X1")
-	plt.plot(T,XX[:,1], label="Velocity of X1")
+#	plt.plot(T,XX[:,1], label="Velocity of X1")
 	plt.plot(T,XX[:,2], label="Position of X2")
-	plt.plot(T,XX[:,3], label="Velocity of X2")
+#	plt.plot(T,XX[:,3], label="Velocity of X2")
 	plt.plot(T,XX[:,4], label="Position of X3")
-	plt.plot(T,XX[:,5], label="Velocity of X4")
+#	plt.plot(T,XX[:,5], label="Velocity of X4")
 	#ax = fig.gca(projection='3d')
 	#ax.plot(v[:, 0], v[:, 1], v[:, 2])
+	plt.legend()
+	plt.show()
+	
+	plt.plot(T,XX[:,1], label="Velocity of X1")
+	plt.plot(T,XX[:,3], label="Velocity of X2")
+	plt.plot(T,XX[:,5], label="Velocity of X4")
 	plt.legend()
 	plt.show()
 if __name__ == '__main__':

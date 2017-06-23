@@ -29,11 +29,12 @@ print("Cross section of SMA pseudo sphere [mm^2]")
 print(A)
 #A = 1
 #AA = 4*math.pi*r**2 #Surface are of SMA pseudo sphere [mm^2]
-AA = A
+AA = 4*math.pi*r**2/6 #Surface are of SMA pseudo sphere [mm^2]
+#AA =0 
 print("Surface area of SMA pseudo sphere [mm^2]")
 print(AA)
 #AA = 1
-Theta_L = 90  #Lattitude [deg]
+Theta_L = 0  #Lattitude [deg]
 m = rho*(math.pi*(0.5*d))**2*D*n #Mass of a SMA spring [g]
 print("Mass of SMA[g]")
 print(m)
@@ -47,7 +48,7 @@ delta = 5.67*10**-2 #Stefan-Boltzman constant [W/mm^2K^4]
 #delta = 1
 a = 0.07 #Albedo constant
 #a = 1
-Tg = 0 + 273.0 #Temperature of the ground[K]
+Tg = 100 + 273.0 #Temperature of the ground[K]
 #Tg = 1
 epsilon = 0.6 #Emissivity of the ground
 TB = 50 + 273.0
@@ -63,7 +64,7 @@ deltaB = 1
 m_ = m/mB
 a_ = a/aB
 A_ = A/AB
-AA_ = A/AB
+AA_ = AA/AB
 Sc_ = Sc/ScB
 c_ = c/cB
 delta_ = delta/deltaB
