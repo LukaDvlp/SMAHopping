@@ -86,7 +86,7 @@ def ThermalEq2(x):   #where Tb > Tg
 	q = value1 - value3 - value4
 	return q
 
-def T_Eq1(x):   #Where Tg>Tb, with plate
+def T_Eq1(x, Tg):   #Where Tg>Tb, with plate
 	value1 = Sb*Fb_g*epsilon*delta*(Tg**4-x[0]**4)/(2*m*c)
 	value2 = Sb*Fb_s*alpha*delta*(x[0]**4-4**4)/(m*c)
 	print("value1={0}".format(value1))
@@ -94,7 +94,7 @@ def T_Eq1(x):   #Where Tg>Tb, with plate
 	q = value1-value2
 	return q
 
-def T_Eq2(x):   #Where Tg>Tb, with plate
+def T_Eq2(x, Tg):   #Where Tg>Tb, with plate
 	value1 = Sb*Fb_g*alpha*delta*(x[0]**4-Tg**4)/(m*c)
 	value2 = Sb*Fb_s*alpha*delta*(x[0]**4-4**4)/(m*c)
 	print("value1={0}".format(value1))
@@ -111,32 +111,32 @@ def RK(x,f):
 	#print(x_)
 	return x_
 
-def RK1(x): #Where Tg >= Tb 
-	k1 = ThermalEq1(x)
-	k2 = ThermalEq1(x+0.5*h*k1)
-	k3 = ThermalEq1(x+0.5*h*k2)
-	k4 = ThermalEq1(x+h*k3)
-	x_ = x + (h/6)*(k1+2*k2+2*k3+k4)
-	#print(x_)
-	return x_
-#'''
-def RK2(x): #Where Tb > Tg 
-	k1 = ThermalEq2(x)
-	k2 = ThermalEq2(x+0.5*h*k1)
-	k3 = ThermalEq2(x+0.5*h*k2)
-	k4 = ThermalEq2(x+h*k3)
+def RK1(x, Tg): #Where Tg >= Tb 
+	k1 = T_Eq1(x, Tg)
+	k2 = T_Eq1(x+0.5*h*k1, Tg)
+	k3 = T_Eq1(x+0.5*h*k2, Tg)
+	k4 = T_Eq1(x+h*k3,Tg)
 	x_ = x + (h/6)*(k1+2*k2+2*k3+k4)
 	#print(x_)
 	return x_
 
-def Cal_Mtlx(X0, t_s, t_f, l):
+def RK2(x, Tg): #Where Tb > Tg 
+	k1 = T_Eq2(x,Tg)
+	k2 = T_Eq2(x+0.5*h*k1,Tg)
+	k3 = T_Eq2(x+0.5*h*k2, Tg)
+	k4 = T_Eq2(x+h*k3, Tg)
+	x_ = x + (h/6)*(k1+2*k2+2*k3+k4)
+	#print(x_)
+	return x_
+
+def Cal_Mtlx(X0, t_s, t_f, l, Tg):
 	XX = np.empty((0,l), float)
 	XX = np.append(XX, np.array([[X0[0]]]), axis=0)
 	t = t_s
 	n = 0
 	while(t<t_f):
 			if XX[n] <= Tg:
-				Step = RK(XX[n], T_Eq1)
+				Step = RK1(XX[n], Tg)
 				print(n)
 				S = np.array([[Step[0]]])
 				#S = np.array(Step)
@@ -144,7 +144,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 				t = t+h
 				n = n+1
 			else:
-				Step = RK(XX[n], T_Eq2)
+				Step = RK2(XX[n], Tg)
 				print(n)
 				S = np.array([[Step[0]]])
 				#S = np.array(Step)
@@ -162,9 +162,15 @@ def main():
 	X0 = [80+273]
 	print(X0)
 	Tg = 120+273
-	XX1 = Cal_Mtlx(X0, t_s, t_f, 1)
+	XX1 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
+	Tg = 80+273
+	XX2 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
 	Tg = 50+273
-	XX2 = Cal_Mtlx(X0, t_s, t_f, 1)
+	XX3 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
+	Tg = 20+273
+	XX4 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
+	Tg = 0+273
+	XX5 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
 	Time = []
 	print(XX1)
 	print(XX2)
@@ -181,7 +187,10 @@ def main():
 	rows2, cols2 = XX2.shape
 	print(rows2,cols2)
 	plt.plot(T,XX1[:,0], label="Tg:393[K]")
-	plt.plot(T,XX2[:,0], label="Tg:373[K]")
+	plt.plot(T,XX2[:,0], label="Tg:353[K]")
+	plt.plot(T,XX3[:,0], label="Tg:323[K]")
+	plt.plot(T,XX4[:,0], label="Tg:293[K]")
+	plt.plot(T,XX5[:,0], label="Tg:273[K]")
 	plt.legend()
 	plt.show()
 
