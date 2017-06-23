@@ -7,20 +7,22 @@ M1 = 0.65  #Mass of Body [Kg]
 M2 = 0.05 #Mass of Pad [Kg]
 g = 1.622  #Gravitational Acceleration [m/s^2] 
 k1 = 1400   #Bias Spring Coefficient [N/m]
-c1 = 1  #Damping Coefficient of Spring [Ns/mm] 
+c1 = 1  #Damping Coefficient of Spring [Ns/m] 
 l0 = 0.1  #Natural Length of Bias Spring [m]
-k2 = 2000  #Spring Coefficient of the ground [N/mm]
-c2 = 200 #Damping Coefficient [Ns/mm]
-Z20 = 0.0  #Initial Position of Pad [mm]
-DZ = 0.05    #Initial Deflextion of Bias Spring [mm]
+k2 = 2000  #Spring Coefficient of the ground [N/m]
+c2 = 200 #Damping Coefficient [Ns/m]
+Z20 = 0.0  #Initial Position of Pad [m]
+DZ = 0.05    #Initial Deflextion of Bias Spring [m]
 h = 0.0002   #Interval of RK
 A = 1/Simu0619.A
 print(Simu0619.n)
+del_AE = Simu0619.delta_AE/1000
 
 def test_func2(x):
 	#term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
 	term1 = (k1*(l0-(x[0]-x[2]))-A*((x[0]-x[2])-del_AE))/M1 - c1/M1*(x[1]-x[3]) - g
 	print"term1 = {0}".format(term1)
+	print"SMA resistance = {0}".format(x[0]-x[2]-del_AE)
 	term2 = -k1/M2*(l0-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3] - g
 	print"term2 = {0}".format(term2)
 	return np.array([x[1], term1, x[3], term2]) 
@@ -98,7 +100,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 2.0 
+	t_f = 0.01 
 	v0 = 10
 	H = 1
 	X0 = [l0-DZ,0,0.0,0]
@@ -111,9 +113,13 @@ def main():
 	print(XX)
 
 	#print(Time)
-	T = np.arange(0, t_f+2*h, h)
+	#T = np.arange(0, t_f+2*h, h)
+	T = np.arange(0, t_f+h, h)
 #	print(T)
-
+	print("Length of T={0}".format(len(T)))
+	print("Size of XX")
+	row, col = XX.shape
+	print(row, col)
 
 	plt.plot(T,XX[:,0], label="Position of X1")
 	plt.plot(T,XX[:,1], label="Velocity of X1")
