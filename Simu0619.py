@@ -144,7 +144,7 @@ F = np.zeros(ELEMENTS,np.float64)
 delta_a = np.zeros(ELEMENTS, np.float64)
 delta_bi = np.zeros(ELEMENTS, np.float64)
 i=0
-delta_AE = 52.5
+#delta_AE = 52.5
 while i<ELEMENTS:
 		F[i] = GRANULARITY*i
 		#tau[i] = 8*D/np.pi/d**3 *F[i-1]

@@ -45,6 +45,13 @@ def test_func2(x):
 	print"term2 = {0}".format(term2)
 	return np.array([x[1], term1, x[3], term2]) 
 	
+def test_func2_(x):
+	term1 = -k1/M1*(x[0]-x[2]) - c1/M1*(x[1]-x[3])
+	print"term1 = {0}".format(term1)
+	term2 = k1/M2*(x[0]-x[2]) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3]
+	print"term2 = {0}".format(term2)
+	return np.array([x[1], term1, x[3], term2]) 
+
 def test_func3(x):
 	term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
 	print"term1 = {0}".format(term1)
@@ -116,7 +123,6 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 	return np.matrix(XX)
 
-def main():
 	t_s = 0.0
 	t_f = 3.0 
 	v0 = 10
@@ -151,5 +157,3 @@ def main():
 	plt.xlim([0,2.60])
 	plt.legend()
 	plt.show()
-if __name__ == '__main__':
-		main()
