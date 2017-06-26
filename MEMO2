@@ -1,0 +1,6 @@
+def test_func2(x):
+	term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
+	print"term1 = {0}".format(term1)
+	term2 = -k1/M2*(l0-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3] - g
+	print"term2 = {0}".format(term2)
+	return np.array([x[1], term1, x[3], term2]) 
