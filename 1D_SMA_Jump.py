@@ -17,14 +17,22 @@ h = 0.0002   #Interval of RK
 A = 1/Simu0619.A
 print(Simu0619.n)
 del_AE = Simu0619.delta_AE/1000
+del_s = Simu0619.delta_s/1000
+F_s = Simu0619.F_s
 
 def test_func2(x):
-	#term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
-	term1 = (k1*(l0-(x[0]-x[2]))-A*((x[0]-x[2])-del_AE))/M1 - c1/M1*(x[1]-x[3]) - g
-	print"term1 = {0}".format(term1)
-	print"SMA resistance = {0}".format(x[0]-x[2]-del_AE)
-	term2 = -k1/M2*(l0-(x[0]-x[2])) + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3] - g
-	print"term2 = {0}".format(term2)
+	if (x[0]-x[2])-del_AE < del_s:
+		term1 = (k1*(l0-(x[0]-x[2]))-A*((x[0]-x[2])-del_AE))/M1 - c1/M1*(x[1]-x[3]) - g
+		print"term1 = {0}".format(term1)
+		print"SMA resistance = {0}".format(x[0]-x[2]-del_AE)
+		term2 = -(k1*(l0-(x[0]-x[2]))-A*((x[0]-x[2])-del_AE))/M2 + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3] - g
+		print"term2 = {0}".format(term2)
+	else:
+		term1 = (k1*(l0-(x[0]-x[2]))-F_s)/M1 - c1/M1*(x[1]-x[3]) - g
+		print"term1 = {0}".format(term1)
+		print"SMA resistance = {0}".format(x[0]-x[2]-del_AE)
+		term2 = -(k1*(l0-(x[0]-x[2]))-F_s)/M2 + c1/M2*(x[1]-x[3]) - k2/M2*x[2] - c2/M2*x[3] - g
+		print"term2 = {0}".format(term2)
 	return np.array([x[1], term1, x[3], term2]) 
 	
 def test_func3(x):
@@ -100,7 +108,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 0.01 
+	t_f = 2.0 
 	v0 = 10
 	H = 1
 	X0 = [l0-DZ,0,0.0,0]
@@ -113,8 +121,8 @@ def main():
 	print(XX)
 
 	#print(Time)
-	#T = np.arange(0, t_f+2*h, h)
-	T = np.arange(0, t_f+h, h)
+	T = np.arange(0, t_f+2*h, h)
+	#T = np.arange(0, t_f+h, h)
 #	print(T)
 	print("Length of T={0}".format(len(T)))
 	print("Size of XX")
