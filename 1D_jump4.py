@@ -10,14 +10,15 @@ g = 1.622  #Gravitational Acceleration [m/s^2]
 k1 = 1400   #Bias Spring Coefficient [N/m]
 c1 = 1  #Damping Coefficient of Spring [Ns/mm] 
 l0 = 0.1  #Natural Length of Bias Spring [m]
-k2 = 2000  #Spring Coefficient of the ground [N/mm]
-c2 = 200 #Damping Coefficient [Ns/mm]
+k2 = 1000  #Spring Coefficient of the ground [N/mm]
+c2 = 100 #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
 DZ = 0.05    #Initial Deflextion of Bias Spring [mm]
 h = 0.00002   #Interval of RK
 d = 1    #Diameter of SMA wire [mm]
 D = 6.8  #Diameter of SMA coil [mm]
 n = 10   #Number of coil spring
+del_AE = 0.04301 
 
 def func1(x):
     return np.array([x[1], (k1/Mb)*(l0-(x[0]-x[2]))-g, x[3], (k1/Mp)*(l0-(x[0]-x[2])\
@@ -124,10 +125,10 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 2.0 
+	t_f = 3.0 
 	v0 = 10
 	H = 1
-	X0 = [l0-DZ,0,0.0,0]
+	X0 = [del_AE,0,0.0,0]
 	#X0 = [l0-0.05,0]
 	#Time = []
 	print(X0)
@@ -137,16 +138,24 @@ def main():
 	print(XX)
 
 	#print(Time)
-	T = np.arange(0, t_f+2*h, h)
+	#T = np.arange(0, t_f+2*h, h)
+	T = np.arange(0, t_f+h, h)
 #	print(T)
+	print("Length of T={0}".format(len(T)))
+	print("Size of XX")
+	row, col = XX.shape
+	print(row, col)
 
-
-	plt.plot(T,XX[:,0], label="Position of X1")
-	plt.plot(T,XX[:,1], label="Velocity of X1")
-	plt.plot(T,XX[:,2], label="Position of X2")
-	plt.plot(T,XX[:,3], label="Velocity of X2")
+	plt.plot(T,XX[:,0], label="Height of Rover")
+	#plt.plot(T,XX[:,1], label="Velocity of X1")
+	#plt.plot(T,XX[:,2], label="Position of X2")
+	#plt.plot(T,XX[:,3], label="Velocity of X2")
 	#ax = fig.gca(projection='3d')
 	#ax.plot(v[:, 0], v[:, 1], v[:, 2])
+	plt.title('1-Dimensional Hopping of Spring Only Rover')
+	plt.xlabel('Time[s]')
+	plt.ylabel('Hopping Height[m]')
+	plt.xlim([0,2.60])
 	plt.legend()
 	plt.show()
 if __name__ == '__main__':
