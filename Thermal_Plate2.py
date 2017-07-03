@@ -4,13 +4,14 @@ from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-h = 0.1   #Interval of RK
+h = 0.0001   #Interval of RK
 #d = 1    #Diameter of SMA wire [mm]
 d = 0.001    #Diameter of SMA wire [m]
 D = 0.0068  #Diameter of SMA coil [m]
 n = 10   #Number of coil spring
 number = 2 #number of used SMA
 rho = 6.5*10**3 #Density of SMA wire [kg/m^3]
+V_Res = 1.93  #Volume Resistivity [Ohm/m]
 r = math.sqrt(math.pi*d*D*n/4) #radius of pseudo sphere of SMA[mm]
 print("radius of pseudo sphere of SMA[mm]")
 print(r)
@@ -24,6 +25,7 @@ print(AA)
 #AA = 1
 Theta_L = 45  #Lattitude [deg]
 m = number*rho*(math.pi*(0.5*d))**2*D*n #Mass of a SMA spring [kg]
+Res = V_Res*4*D*n/d**2
 #m = 0.003 
 #c = 440  #Specific heat capacity of SMA spring [J/kg K]
 c = 440  #Specific heat capacity of SMA spring [J/kg K]
@@ -45,61 +47,29 @@ theta = 45 #angle of hopping leg
 Fb_g = 0.5*(1+math.cos(math.radians(theta)))
 Fb_s = 0.5*(1-math.cos(math.radians(theta)))
 alpha = 1.0 #Emissivity of heat sink
-
-
-def ThermalEq1(x): #where Tg >= Tb
-	value1 = A*math.cos(math.radians(Theta_L))*Sc/(m*c)
-	print("value1")
-	print(value1)
-	value2 = a*A*math.cos(math.radians(Theta_L))*Sc/(m*c)
-	print("value2")
-	print(value2)
-	value3 = epsilon*delta*A*(Tg**4-x[0]**4)/(2*m*c)
-	print"(Tg/TB)**4 = {0}" 
-	print(Tg/TB)
-	print"(Tb/TB)**4 = {0}".format((x[0]/TB)**4)
-	print("value3")
-	print(value3)
-	value4 = delta*AA*(x[0]**4-4**4)/(m*c)
-#	value4 = delta*A*((x[0]/TB)**4-(4/TB)**4)/(m*c)
-	print("value4")
-	print(value4)
-	q = value1 + value2 + value3 - value4 
-#	q = value1 + value2 
-	return q
-
-def ThermalEq2(x):   #where Tb > Tg
-	value1 = A*math.cos(math.radians(Theta_L))*Sc/(m*c)
-	print("value1")
-	print(value1)
-	value2 = a*A*math.cos(math.radians(Theta_L))*Sc/(m*c)
-	print("value2")
-	print(value2)
-	value3 = delta*A*((x[0])**2 + (Tg)**2)*((x[0])**2 - (Tg)**2)/(2*m*c)
-	print("value3")
-	print(value3)
-	value4 = delta*AA*((x[0]/TB)**4-(4/TB)**4)/(m*c)
-	#value4 = delta*AA*((x[0]/TB)**4-(4/TB)**4)/(m*c)
-	print("value4")
-	print(value4)
-#	q = value1 + value2 - value3 - value4 
-	q = value1 - value3 - value4
-	return q
+I = 3  #Current [A]
 
 def T_Eq1(x, Tg):   #Where Tg>Tb, with plate
 	value1 = Sb*Fb_g*epsilon*delta*(Tg**4-x[0]**4)/(2*m*c)
 	value2 = Sb*Fb_s*alpha*delta*(x[0]**4-4**4)/(m*c)
+	value3 = Res*I**2/(m*c)
 	print("value1={0}".format(value1))
 	print("value2={0}".format(value2))
-	q = value1-value2
+	if x[0] < 80+273:
+		q = value1-value2+value3
+	else:
+			q = value1 + value2
 	return q
 
 def T_Eq2(x, Tg):   #Where Tg>Tb, with plate
 	value1 = Sb*Fb_g*alpha*delta*(x[0]**4-Tg**4)/(m*c)
 	value2 = Sb*Fb_s*alpha*delta*(x[0]**4-4**4)/(m*c)
+	value3 = Res*I**2/(m*c)
 	print("value1={0}".format(value1))
-	print("value2={0}".format(value2))
-	q = -value1-value2
+	if x[0] < 80+273:
+		q = value1-value2+value3
+	else:
+			q = value1 + value2
 	return q
 
 def RK(x,f):  
@@ -156,10 +126,10 @@ def Cal_Mtlx(X0, t_s, t_f, l, Tg):
 
 def main():
 	t_s = 0.0
-	t_f = 2000.0 
+	t_f = 10.0 
 	t = 0
 	n = 0
-	X0 = [80+273]
+	X0 = [20+273]
 	print(X0)
 	Tg = 120+273
 	XX1 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)

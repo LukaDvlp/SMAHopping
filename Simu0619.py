@@ -1,3 +1,4 @@
+# coding: UTF-8
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import integrate
@@ -60,11 +61,11 @@ Yeild = 100
 m = 0.7 
 Theta = 30.0
 number = 2 
-n = 15 
+n = 10 
 D = 6.2  #Diameter of Coil[mm]
 d = 1.2  #Diameter of Wire[mm]
 solid_height = d*n ##solid height of SMA spring[mm]
-k = 1.4 
+k = 1.2 
 X0 = 100 
 X0_SMA = solid_height 
 #X0_SMA = 45             #Natural Height of SMA[mm]
@@ -225,34 +226,41 @@ while(delta_AE+LL*NN<=delta_ME):
 print(Del)
 print(N)
 
-fig, (axL, axR) = plt.subplots(ncols=2, figsize=(10,4))
-axL.plot(del_m,Force, label="Martensite", color='black', linestyle=":")
-axL.plot(del_a,Force, label="Autenite")
-axL.plot(del_b,Force, label="Bias Spring")
-axL.plot(del_m_,Force, label="Martensite Actual" )
-#plt.plot(del_m,Force, label="Martensite", color='black')
-#plt.plot(del_a,Force, label="Autenite")
-#plt.plot(del_b,Force, label="Bias Spring")
+#fig, (axL, axR) = plt.subplots(ncols=2, figsize=(10,4))
+#axL.plot(del_m,Force, label="Martensite", color='black', linestyle=":")
+#axL.plot(del_a,Force, label="Autenite")
+#axL.plot(del_b,Force, label="Bias Spring")
+#axL.plot(del_m_,Force, label="Martensite Actual" )
+plt.plot(del_m,Force,  color='black', linestyle=':')
+plt.plot(del_a,Force, label="Austenite")
+plt.plot(del_b,Force, label="Bias Spring")
+plt.plot(del_m_,Force, label="Martensite")
 #
-#plt.title('Force-Deflection curve')
-axL.set_title('Force-Deflection curve')
-#plt.xlabel('Length [mm]')
-axL.set_xlabel('Length [mm]')
-#plt.ylabel('Force [N]')
-axL.set_ylabel('Force [N]')
-#plt.xlim([0,X0])
-axL.set_xlim([0,X0])
+plt.title('Force-Deflection curve')
+#axL.set_title('Force-Deflection curve')
+plt.xlabel('Length [mm]')
+#axL.set_xlabel('Length [mm]')
+plt.ylabel('Force [N]')
+#axL.set_ylabel('Force [N]')
+plt.xlim([0,X0])
+#axL.set_xlim([0,X0])
 #axL.legend()
-##plt.plot(F,delta)
-##plt.plot(F,delta_a)
-##plt.plot(F,delta_bi)
-#plt.show()
-#
-#plt.plot(Del[:,0],N[:,0], label="Martensite", color='black')
-axR.plot(Del[:,0],N[:,0], label="Martensite", color='black')
-axR.set_title('Force-Deflection curve')
-axR.set_xlabel('Deformation [mm]')
-axR.set_ylabel('Force [N]')
-axR.set_xlim([delta_AE,delta_ME])
+#plt.plot(F,delta)
+#plt.plot(F,delta_a)
+#plt.plot(F,delta_bi)
+plt.legend()
 plt.show()
+#
+#plt.plot(Del[:,0],N[:,0], label="Repulsive Force", color='black')
+#plt.title('Replusive Force')
+#plt.xlabel('Length')
+#plt.ylabel('Force')
+#plt.xlim([delta_AE,delta_ME])
+#axR.plot(Del[:,0],N[:,0], label="Martensite", color='black')
+#axR.set_title('Force-Deflection curve')
+#axR.set_xlabel('Deformation [mm]')
+#axR.set_ylabel('Force [N]')
+#axR.set_xlim([delta_AE,delta_ME])
+#plt.legend()
+#plt.show()
 #fig.show()

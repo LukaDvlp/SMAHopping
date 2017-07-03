@@ -6,10 +6,10 @@ def func(x):
 def main():
 	x = [1,2,3,4,5]
 	ZZ = np.array([])
-	y, ZZ = func(x)[0], np.a
 	ZZ = np.append(ZZ, func(x)[1], axis=0)
-	print(y)
 	print(ZZ)
+	Z1 = 3*ZZ
+	print(Z1)
 
 
 if __name__ == '__main__':

@@ -14,14 +14,15 @@ k2 = 1000  #Spring Coefficient of the ground [N/m]
 c2 = 100 #Damping Coefficient [Ns/m]
 Z20 = 0.0  #Initial Position of Pad [m]
 DZ = 0.05    #Initial Deflextion of Bias Spring [m]
-h = 0.00002   #Interval of RK
+h = 0.000002   #Interval of RK
 A = 1/Simu0619.A
 print(Simu0619.n)
 del_AE = Simu0619.delta_AE/1000
 del_s = Simu0619.delta_s/1000
 F_s = Simu0619.F_s
-theta=45 #degree
-theta = math.radians(theta) 
+theta = 45 #degree
+theta = math.radians(theta) #Convert to radian
+mu_d = 0.8
 
 def test_func2(x):
 	if (x[0]-x[2])-del_AE < del_s:
@@ -76,6 +77,93 @@ def NoSMA_func2(x):
 	print"term2 = {0}".format(term2)
 	return np.array([x[1], term1, x[3], term2]) 
 
+def TwoD_func1_NoSlip(x):
+	term1 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.cos(theta)
+	term3 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) - g
+	term4 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta) + c1/M2*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) -k2/M2*x[6] -c2/M2*x[7] - g
+	if x[6]<=0:
+			term2 = 0
+	else:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)
+	print"term1 = {0}".format(term1)
+	print"term2 = {0}".format(term2)
+	print"term3 = {0}".format(term3)
+	print"term4 = {0}".format(term4)
+	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7], term4])
+	
+def TwoD_func1_Slip(x):
+	term1 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.cos(theta)
+	term3 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) - g
+	term4 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta) + c1/M2*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) -k2/M2*x[6] -c2/M2*x[7] - g
+	if x[6]<=0:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta) + mu_d*(-k2/M2*x[6] -c2/M2*x[7])
+
+	else:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)
+	print"term1 = {0}".format(term1)
+	print"term2 = {0}".format(term2)
+	print"term3 = {0}".format(term3)
+	print"term4 = {0}".format(term4)
+	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7], term4])
+	
+def TwoD_func2_NoSlip(x):
+	term1 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.cos(theta)
+	term3 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) - g
+	term4 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta) + c1/M2*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) -k2/M2*x[6] - g
+	if x[6]<=0:
+			term2 = 0
+	else:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)
+	print"term1 = {0}".format(term1)
+	print"term2 = {0}".format(term2)
+	print"term3 = {0}".format(term3)
+	print"term4 = {0}".format(term4)
+	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7], term4])
+	
+def TwoD_func2_Slip(x):
+	term1 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.cos(theta)
+	term3 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) - g
+	term4 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta) + c1/M2*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) -k2/M2*x[6] - g
+	if x[6]<=0:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta) + mu_d*(-k2/M2*x[6] -c2/M2*x[7])
+
+	else:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)
+	print"term1 = {0}".format(term1)
+	print"term2 = {0}".format(term2)
+	print"term3 = {0}".format(term3)
+	print"term4 = {0}".format(term4)
+	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7], term4])
+
+def TwoD_func3_NoSlip(x):
+	term1 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.cos(theta)
+	term3 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) - g
+	term4 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta) + c1/M2*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) - g
+	if x[6]<=0:
+			term2 = 0
+	else:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)
+	print"term1 = {0}".format(term1)
+	print"term2 = {0}".format(term2)
+	print"term3 = {0}".format(term3)
+	print"term4 = {0}".format(term4)
+	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7], term4])
+
+def TwoD_func3_Slip(x):
+	term1 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.cos(theta)
+	term3 = k1/M1*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta)	- c1/M1*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) - g
+	term4 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.sin(theta) + c1/M2*math.sqrt((x[1]-x[3])**2+(x[5]-x[7])**2)*math.sin(theta) - g
+	if x[6]<=0:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta) + mu_d*(-k2/M2*x[6] -c2/M2*x[7])
+
+	else:
+			term2 = -k1/M2*(l0-math.sqrt((x[0]-x[2])**2+(x[4]-x[6])**2))*math.cos(theta)
+	print"term1 = {0}".format(term1)
+	print"term2 = {0}".format(term2)
+	print"term3 = {0}".format(term3)
+	print"term4 = {0}".format(term4)
+	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7], term4])
+
 def NoSMA_func3(x):
 	term1 = k1/M1*(l0-(x[0]-x[2])) - c1/M1*(x[1]-x[3]) - g
 	print"term1 = {0}".format(term1)
@@ -104,41 +192,29 @@ def RK(x, f):
 	
 def Cal_Mtlx(X0, t_s, t_f, l):
 	XX = np.empty((0,l), float)
-	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3]]]), axis=0)
-	#XX = np.append(XX, np.array([[X0[0],X0[1]]]), axis=0)
+	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3],X0[4],X0[5],X0[6],X0[7]]]), axis=0)
 	t = t_s
 	n = 0
 	while(t<t_f):
-			if XX[n,2]<0 and XX[n,3]<0:
-			#if 1>0:
-				Step = RK(XX[n], test_func2)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
-				#S = np.array([[Step[0],Step[1]]])
-				#S = np.array(Step)
+			if XX[n,6]<0 and XX[n,7]<0:
+				Step = RK(XX[n], TwoD_func1_Slip)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7]]])
 				XX = np.append(XX, S, axis=0)
 				print(n)
 				print("Using func1")
-				#print"term1 = {0}".format(term1)
-				#print"term2 = {0}".format(term2)
 				t = t+h
 				n = n+1
-			elif XX[n,2]<0 and XX[n,3]>=0:
-				Step = RK(XX[n], test_func3)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
-				#S = np.array([[Step[0],Step[1]]])
-				#S = np.array(Step)
+			elif XX[n,6]<0 and XX[n,7]>=0:
+				Step = RK(XX[n], TwoD_func2_Slip)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7]]])
 				XX = np.append(XX, S, axis=0)
 				print(n)
 				print("Using func2")
-				#print"term1 = {0}".format(term1)
-				#print"term2 = {0}".format(term2)
 				t = t+h
 				n = n+1
 			else:	
-				Step = RK(XX[n], test_func4)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
-				#S = np.array([[Step[0],Step[1]]])
-				#S = np.array(Step)
+				Step = RK(XX[n], TwoD_func3_Slip)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7]]])
 				XX = np.append(XX, S, axis=0)
 				print(n)
 				print("Using func3")
@@ -150,7 +226,6 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 def Cal_Mtl_NoSMA(X0, t_s, t_f, l):
 	XX = np.empty((0,l), float)
 	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3]]]), axis=0)
-	#XX = np.append(XX, np.array([[X0[0],X0[1]]]), axis=0)
 	t = t_s
 	n = 0
 	while(t<t_f):
@@ -194,18 +269,15 @@ def Cal_Mtl_NoSMA(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 3.0 
+	t_f = 0.1 
 	v0 = 10
 	H = 1
-	X0 = [del_AE,0,0.0,0]
+	X0 = [3.5,0,0.0,0,3.5,0,0,0]
 	#X0 = [l0-0.05,0]
 	#Time = []
 	print(X0)
-#	print(RK(X0))
-#	print(RK(X0)[1])
-	XX = Cal_Mtlx(X0, t_s, t_f, 4)
+	XX = Cal_Mtlx(X0, t_s, t_f, 8)
 	#YY = Cal_Mtl_NoSMA(X0, t_s, t_f, 4)
-	XX_x = math. 
 	print(XX)
 	#print(Time)
 	#T = np.arange(0, t_f+2*h, h)
@@ -217,7 +289,7 @@ def main():
 	print(row, col)
 
 	plt.plot(T,XX[:,0], label="SMA Rover")
-	plt.plot(T,YY[:,0], label="Spring Only", color='black', linestyle=":")
+	#plt.plot(T,YY[:,0], label="Spring Only", color='black', linestyle=":")
 	#plt.plot(T,XX[:,2], label="Height of Rover's Pad")
 	#plt.plot(T,XX[:,2], label="Position of X2")
 	#plt.plot(T,XX[:,3], label="Velocity of X2")
