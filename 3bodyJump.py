@@ -12,8 +12,8 @@ k1 = 1400   #Bias Spring Coefficient [N/m]
 c1 = 1  #Damping Coefficient of Spring [Ns/mm] 
 l01 = 0.1  #Natural Length of Bias Spring1 [m]
 l02 = 0.1  #Natural Length of Bias Spring2 [m]
-k2 = 200000  #Spring Coefficient of the ground [N/mm]
-c2 = 1 #Damping Coefficient [Ns/mm]
+#k2 = 200000  #Spring Coefficient of the ground [N/mm]
+#c2 = 1 #Damping Coefficient [Ns/mm]
 kg = 2000  #Spring Coefficient of the ground [N/mm]
 cg = 200 #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
@@ -81,7 +81,6 @@ def RK(x, f):
 def Cal_Mtlx(X0, t_s, t_f, l):
 	XX = np.empty((0,l), float)
 	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3],X0[4],X0[5]]]), axis=0)
-	#XX = np.append(XX, np.array([[X0[0],X0[1]]]), axis=0)
 	t = t_s
 	n = 0
 	while(t<t_f):
@@ -132,8 +131,7 @@ def main():
 	#X0 = [l0-0.05,0]
 	#Time = []
 	print(X0)
-#	print(RK(X0))
-#	print(RK(X0)[1])
+	k2 = 
 	XX = Cal_Mtlx(X0, t_s, t_f, 6)
 	print(XX)
 

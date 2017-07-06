@@ -14,7 +14,7 @@ k2 = 1000  #Spring Coefficient of the ground [N/m]
 c2 = 100 #Damping Coefficient [Ns/m]
 Z20 = 0.0  #Initial Position of Pad [m]
 DZ = 0.05    #Initial Deflextion of Bias Spring [m]
-h = 0.000002   #Interval of RK
+h = 0.002   #Interval of RK
 A = 1/Simu0619.A
 print(Simu0619.n)
 del_AE = Simu0619.delta_AE/1000
@@ -23,6 +23,9 @@ F_s = Simu0619.F_s
 theta = 45 #degree
 theta = math.radians(theta) #Convert to radian
 mu_d = 0.8
+I = 0.1 
+M_G = M1+M2
+r2 = 1
 
 def test_func2(x):
 	if (x[0]-x[2])-del_AE < del_s:
@@ -181,11 +184,18 @@ def NoSMA_func4(x):
 def motion_test(x):
 	return np.array([x[1],-g])
 
-def RK(x, f):
-	k1 = f(x)
-	k2 = f(x+0.5*h*k1)
-	k3 = f(x+0.5*h*k2)
-	k4 = f(x+h*k3)
+def MotionOfCOG(x, F1, F2):	
+	term1 = F2/M_G
+	term2 = F1/M_G -g
+	term3 = M2*r2*F1*math.cos(x[4])/I + M2*r2*F2*math.sin(x[4])/I 
+	print(term3)
+	return np.array([x[1], term1, x[3], term2, term3])
+
+def RK(x, f, F1, F2):
+	k1 = f(x, F1, F2)
+	k2 = f(x+0.5*h*k1, F1, F2)
+	k3 = f(x+0.5*h*k2, F1, F2)
+	k4 = f(x+h*k3, F1, F2)
 	x_ = x + (h/6)*(k1+2*k2+2*k3+k4)
 	#print(x_)
 	return x_
@@ -267,38 +277,62 @@ def Cal_Mtl_NoSMA(X0, t_s, t_f, l):
 
 	return np.matrix(XX)
 
+def Cal_Test(X0, t_s, t_f, t_i, l):
+	XX = np.empty((0,l), float)
+	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3], X0[4]]]), axis=0)
+	t = t_s
+	n = 0
+	while(t<t_f):
+			if t<t_i:
+				F1=40
+				F2=20
+				Step = RK(XX[n], MotionOfCOG, F1, F2)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3], Step[4]]])
+				XX = np.append(XX, S, axis=0)
+				print(n)
+				t = t+h
+				n = n+1
+			else:
+				F1=0
+				F2=0
+				Step = RK(XX[n], MotionOfCOG, F1, F2)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3], Step[4]]])
+				XX = np.append(XX, S, axis=0)
+				print(n)
+				t = t+h
+				n = n+1
+
+	return np.matrix(XX)
+
 def main():
 	t_s = 0.0
-	t_f = 0.1 
+	t_f = 10.0 
+	t_i = 0.2
 	v0 = 10
 	H = 1
-	X0 = [3.5,0,0.0,0,3.5,0,0,0]
+	theta_g = math.pi/4
+	X0 = [math.cos(theta_g),0,math.sin(theta_g),0,theta_g]
 	#X0 = [l0-0.05,0]
-	#Time = []
 	print(X0)
-	XX = Cal_Mtlx(X0, t_s, t_f, 8)
-	#YY = Cal_Mtl_NoSMA(X0, t_s, t_f, 4)
+	XX = Cal_Test(X0, t_s, t_f, t_i, 5)
 	print(XX)
-	#print(Time)
-	#T = np.arange(0, t_f+2*h, h)
 	T = np.arange(0, t_f+h, h)
-#	print(T)
 	print("Length of T={0}".format(len(T)))
 	print("Size of XX")
 	row, col = XX.shape
 	print(row, col)
 
-	plt.plot(T,XX[:,0], label="SMA Rover")
-	#plt.plot(T,YY[:,0], label="Spring Only", color='black', linestyle=":")
-	#plt.plot(T,XX[:,2], label="Height of Rover's Pad")
-	#plt.plot(T,XX[:,2], label="Position of X2")
-	#plt.plot(T,XX[:,3], label="Velocity of X2")
+	plt.plot(T,XX[:,0], label="Position X")
+	plt.plot(T,XX[:,2], label="Velocity X")
+	plt.plot(T,XX[:,2], label="Position Z")
+	plt.plot(T,XX[:,3], label="Velocity Z")
+	plt.plot(T,XX[:,4], label="Angle")
 	#ax = fig.gca(projection='3d')
 	#ax.plot(v[:, 0], v[:, 1], v[:, 2])
-	plt.title('1-Dimensional Hopping of SMA Rover')
+	plt.title('2-Dimensional Behavior of the COG')
 	plt.xlabel('Time[s]')
-	plt.ylabel('Hopping Height[m]')
-	plt.xlim([0,2.16])
+	plt.ylabel('Values')
+	#plt.xlim([0,2.16])
 	plt.legend()
 	plt.show()
 	#plt.plot(T,XX[:,1], label="Height of Rover's Body")
