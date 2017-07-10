@@ -3,6 +3,11 @@ import numpy as np
 def func(x):
 	return np.array([[2*x], [x[0], x[1]]])
 
+def returnMatrix():
+	XX = np.matrix([[1,2],[3,4]])
+	YY = np.matrix([[5,6],[7,8]])
+	return (XX, YY)
+
 def main():
 	x = [1,1]
 	y = [6,7,8,9,10]
@@ -42,6 +47,10 @@ def main():
 	print(A)
 	Sxx1 = ZZ1_*np.matrix([[S[0,0]],[S[0,2]]])
 	print(Sxx1)
+	XX, YY = returnMatrix()
+	print(XX)
+	print(YY)
+	#print(returnMatrix()(0))
 	
 if __name__ == '__main__':
 		main()

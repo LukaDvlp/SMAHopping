@@ -304,14 +304,15 @@ def Cal_Mtlx(X0,Y0, t_s, t_f, l):
 				Sy = np.array([[Sxx1[0,0],Svv1[0,0],Sxx1[1,0],Svv1[1,0],Sxx2[0,0],Svv2[0,0],Sxx2[1,0],Svv2[1,0]]])
 				XX = np.append(XX, S, axis=0)
 				YY = np.append(YY, Sy, axis=0)
-				YY = np.append(YY, Sy, axis=0)
 
 				print(n)
 				print("Using func3")
 				t = t+h
 				n = n+1
 
-	return np.matrix(XX, YY)
+	XX = np.matrix(XX)
+	YY = np.matrix(YY)
+	return (XX, YY)
 	
 
 def main():
@@ -326,22 +327,50 @@ def main():
 	yy1 = R_*np.matrix([[X0[0]],[X0[3]]])
 	Y0 = [yy1[0,0], 0, yy1[1,0], 0, 0, 0, 0, 0]
 	print(X0)
-	XX = Cal_Mtlx(X0,Y0, t_s, t_f, 10)[0]
+	XX, YY = Cal_Mtlx(X0,Y0, t_s, t_f, 10)
 	print(XX)
-	#T = np.arange(0, t_f+h, h)
-	T = np.arange(0, t_f+2*h, h)
+	T = np.arange(0, t_f+h, h)
+	#T = np.arange(0, t_f+2*h, h)
 	print("Length of T={0}".format(len(T)))
 	print("Size of XX")
 	row, col = XX.shape
 	print(row, col)
 
-	plt.plot(T,XX[:,0], label="Position X")
-	plt.plot(T,XX[:,2], label="Velocity X")
-	plt.plot(T,XX[:,2], label="Position Z")
-	plt.plot(T,XX[:,3], label="Velocity Z")
-	plt.plot(T,XX[:,4], label="Angle")
-	plt.plot(T,XX[:,5], label="Angular Velocity")
-	plt.title('2-Dimensional Behavior of the COG')
+	T = np.arange(0, t_f+h, h)
+	#T = np.arange(0, t_f+2*h, h)
+	print("Length of T={0}".format(len(T)))
+	print("Size of YY")
+	row, col = YY.shape
+	print(row, col)
+
+	plt.plot(T,XX[:,0], label="Position X1\'")
+	plt.plot(T,XX[:,1], label="Velocity X1\'")
+	plt.plot(T,XX[:,2], label="Position Z1\'")
+	plt.plot(T,XX[:,3], label="Velocity Z1\'")
+	plt.plot(T,XX[:,4], label="Position X2\'")
+	plt.plot(T,XX[:,5], label="Velocity X2\'")
+	plt.plot(T,XX[:,6], label="Position Z2\'")
+	plt.plot(T,XX[:,7], label="Velocity Z2\'")
+	plt.plot(T,XX[:,8], label="Angle")
+	plt.plot(T,XX[:,9], label="Angular Velocity")
+	plt.title('2-Dimensional Behavior on the non-inertial flame')
+	plt.xlabel('Time[s]')
+	plt.ylabel('Values')
+	#plt.xlim([0,2.16])
+	plt.legend()
+	plt.show()
+	
+	plt.plot(T,YY[:,0], label="Position X1")
+	plt.plot(T,YY[:,1], label="Velocity X1")
+	plt.plot(T,YY[:,2], label="Position Z1")
+	plt.plot(T,YY[:,3], label="Velocity Z1")
+	plt.plot(T,YY[:,4], label="Position X2")
+	plt.plot(T,YY[:,5], label="Velocity X2")
+	plt.plot(T,YY[:,6], label="Position Z2")
+	plt.plot(T,YY[:,7], label="Velocity Z2")
+	plt.plot(T,XX[:,8], label="Angle")
+	plt.plot(T,XX[:,9], label="Angular Velocity")
+	plt.title('2-Dimensional Behavior on the non-inertial flame')
 	plt.xlabel('Time[s]')
 	plt.ylabel('Values')
 	#plt.xlim([0,2.16])
