@@ -206,8 +206,20 @@ def Eq_Motion1(x):
 	F2 = R_*F2_
 	F3 = R_*F3_
 	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
+	Fcent_x1 = M1*x[0]*(x[9])**2
+	Fcent_z1 = M1*x[2]*(x[9])**2 
+	Fcent_x2 = M2*x[4]*(x[9])**2
+	Fcent_z2 = M2*x[6]*(x[9])**2
+	Fcor_x1 = 2*M1*x[3]*x[9]
+	Fcor_z1 = -2*M1*x[1]*x[9]
+	Fcor_x2 = 2*M2*x[7]*x[9]
+	Fcor_z2 = -2*M2*x[5]*x[9]
+	Feul_x1 = M1*x[2]*term_r
+	Feul_z1 = -M1*x[0]*term_r
+	Feul_x2 = M2*x[6]*term_r
+	Feul_z2= -M2*x[4]*term_r
 	
-	return np.array([x[1], FG1_[0,0]/M1, x[3], F1_/M1 + FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2, x[9], term_r ])
+	return np.array([x[1], FG1_[0,0]/M1+Fcent_x1/M1+Fcor_x1/M1+Feul_x1/M1, x[3], F1_/M1 +Fcent_z1/M1+Fcor_z1/M1+Feul_z1/M1+ FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2+Fcent_x2/M2+Fcor_x2/M2+Feul_x2/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2+Fcent_z2/M2+Fcor_z2/M2+Feul_z2/M2, x[9], term_r ])
 
 def Eq_Motion2(x):
 	R = np.matrix([[np.sin(x[8]), np.cos(x[8])],[-np.cos(x[8]), np.sin(x[8])]])
@@ -224,7 +236,22 @@ def Eq_Motion2(x):
 	F3 = R_*F3_
 	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
 	
-	return np.array([x[1], FG1_[0,0]/M1, x[3], F1_/M1 + FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2, x[9], term_r ])
+	Fcent_x1 = M1*x[0]*(x[9])**2
+	Fcent_z1 = M1*x[2]*(x[9])**2 
+	Fcent_x2 = M2*x[4]*(x[9])**2
+	Fcent_z2 = M2*x[6]*(x[9])**2
+	Fcor_x1 = 2*M1*x[3]*x[9]
+	Fcor_z1 = -2*M1*x[1]*x[9]
+	Fcor_x2 = 2*M2*x[7]*x[9]
+	Fcor_z2 = -2*M2*x[5]*x[9]
+	Feul_x1 = M1*x[2]*term_r
+	Feul_z1 = -M1*x[0]*term_r
+	Feul_x2 = M2*x[6]*term_r
+	Feul_z2= -M2*x[4]*term_r
+	
+	return np.array([x[1], FG1_[0,0]/M1+Fcent_x1/M1+Fcor_x1/M1+Feul_x1/M1, x[3], F1_/M1 +Fcent_z1/M1+Fcor_z1/M1+Feul_z1/M1+ FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2+Fcent_x2/M2+Fcor_x2/M2+Feul_x2/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2+Fcent_z2/M2+Fcor_z2/M2+Feul_z2/M2, x[9], term_r ])
+#	return np.array([x[1], FG1_[0,0]/M1, x[3], F1_/M1 + FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2, x[9], term_r ])
+	
 
 def Eq_Motion3(x):
 	R = np.matrix([[np.sin(x[8]), np.cos(x[8])],[-np.cos(x[8]), np.sin(x[8])]])
@@ -240,8 +267,22 @@ def Eq_Motion3(x):
 	F2 = R_*F2_
 	F3 = R_*F3_
 	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
+	Fcent_x1 = M1*x[0]*(x[9])**2
+	Fcent_z1 = M1*x[2]*(x[9])**2 
+	Fcent_x2 = M2*x[4]*(x[9])**2
+	Fcent_z2 = M2*x[6]*(x[9])**2
+	Fcor_x1 = 2*M1*x[3]*x[9]
+	Fcor_z1 = -2*M1*x[1]*x[9]
+	Fcor_x2 = 2*M2*x[7]*x[9]
+	Fcor_z2 = -2*M2*x[5]*x[9]
+	Feul_x1 = M1*x[2]*term_r
+	Feul_z1 = -M1*x[0]*term_r
+	Feul_x2 = M2*x[6]*term_r
+	Feul_z2= -M2*x[4]*term_r
 	
-	return np.array([x[1], FG1_[0,0]/M1, x[3], F1_/M1 + FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2, x[9], term_r ])
+	return np.array([x[1], FG1_[0,0]/M1+Fcent_x1/M1+Fcor_x1/M1+Feul_x1/M1, x[3], F1_/M1 +Fcent_z1/M1+Fcor_z1/M1+Feul_z1/M1+ FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2+Fcent_x2/M2+Fcor_x2/M2+Feul_x2/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2+Fcent_z2/M2+Fcor_z2/M2+Feul_z2/M2, x[9], term_r ])
+
+#	return np.array([x[1], FG1_[0,0]/M1, x[3], F1_/M1 + FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2, x[9], term_r ])
 
 
 def RK(x, f):
@@ -317,7 +358,7 @@ def Cal_Mtlx(X0,Y0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 5.0 
+	t_f = 15.0 
 	t_i = 0.1
 
 	theta_g = math.pi/4
@@ -329,28 +370,26 @@ def main():
 	print(X0)
 	XX, YY = Cal_Mtlx(X0,Y0, t_s, t_f, 10)
 	print(XX)
-	T = np.arange(0, t_f+h, h)
-	#T = np.arange(0, t_f+2*h, h)
+	#T = np.arange(0, t_f+h, h)
+	T = np.arange(0, t_f+2*h, h)
 	print("Length of T={0}".format(len(T)))
 	print("Size of XX")
 	row, col = XX.shape
 	print(row, col)
 
-	T = np.arange(0, t_f+h, h)
-	#T = np.arange(0, t_f+2*h, h)
 	print("Length of T={0}".format(len(T)))
 	print("Size of YY")
 	row, col = YY.shape
 	print(row, col)
 
 	plt.plot(T,XX[:,0], label="Position X1\'")
-	plt.plot(T,XX[:,1], label="Velocity X1\'")
+	#plt.plot(T,XX[:,1], label="Velocity X1\'")
 	plt.plot(T,XX[:,2], label="Position Z1\'")
-	plt.plot(T,XX[:,3], label="Velocity Z1\'")
+	#plt.plot(T,XX[:,3], label="Velocity Z1\'")
 	plt.plot(T,XX[:,4], label="Position X2\'")
-	plt.plot(T,XX[:,5], label="Velocity X2\'")
+	#plt.plot(T,XX[:,5], label="Velocity X2\'")
 	plt.plot(T,XX[:,6], label="Position Z2\'")
-	plt.plot(T,XX[:,7], label="Velocity Z2\'")
+	#plt.plot(T,XX[:,7], label="Velocity Z2\'")
 	plt.plot(T,XX[:,8], label="Angle")
 	plt.plot(T,XX[:,9], label="Angular Velocity")
 	plt.title('2-Dimensional Behavior on the non-inertial flame')
@@ -361,13 +400,13 @@ def main():
 	plt.show()
 	
 	plt.plot(T,YY[:,0], label="Position X1")
-	plt.plot(T,YY[:,1], label="Velocity X1")
+	#plt.plot(T,YY[:,1], label="Velocity X1")
 	plt.plot(T,YY[:,2], label="Position Z1")
-	plt.plot(T,YY[:,3], label="Velocity Z1")
+	#plt.plot(T,YY[:,3], label="Velocity Z1")
 	plt.plot(T,YY[:,4], label="Position X2")
-	plt.plot(T,YY[:,5], label="Velocity X2")
+	#plt.plot(T,YY[:,5], label="Velocity X2")
 	plt.plot(T,YY[:,6], label="Position Z2")
-	plt.plot(T,YY[:,7], label="Velocity Z2")
+	#plt.plot(T,YY[:,7], label="Velocity Z2")
 	plt.plot(T,XX[:,8], label="Angle")
 	plt.plot(T,XX[:,9], label="Angular Velocity")
 	plt.title('2-Dimensional Behavior on the non-inertial flame')
