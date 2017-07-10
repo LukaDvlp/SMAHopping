@@ -14,7 +14,7 @@ k2 = 1000  #Spring Coefficient of the ground [N/m]
 c2 = 100 #Damping Coefficient [Ns/m]
 Z20 = 0.0  #Initial Position of Pad [m]
 DZ = 0.05    #Initial Deflextion of Bias Spring [m]
-h = 0.002   #Interval of RK
+h = 0.0002   #Interval of RK
 A = 1/Simu0619.A
 print(Simu0619.n)
 del_AE = Simu0619.delta_AE/1000
@@ -201,8 +201,8 @@ def Eq_Motion1(x):
 	f = np.matrix([[0], [M1*g]])
 	FG1_ = R*f
 	FG2_ = R*np.matrix([[0],[M2*g]])
-	F3_ = R*np.matrix([[0],[-k2*r2[0,1]-c2*v2[0,1]]]) 
-	F2_ = mu_d*F3
+	F3_ = R*np.matrix([[0],[-k2*r2[1,0]-c2*v2[1,0]]]) 
+	F2_ = mu_d*F3_
 	F2 = R_*F2_
 	F3 = R_*F3_
 	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
@@ -218,8 +218,8 @@ def Eq_Motion2(x):
 	F1_ = k1*(l0-(x[2]-x[6])) - c1*(x[3]-x[7])
 	FG1_ = R*np.matrix([[0],[M1*g]])
 	FG2_ = R*np.matrix([[0],[M2*g]])
-	F3_ = R*np.matrix([[0],[-k2*r2[0,1]]]) 
-	F2_ = mu_d*F3
+	F3_ = R*np.matrix([[0],[-k2*r2[1,0]]]) 
+	F2_ = mu_d*F3_
 	F2 = R_*F2_
 	F3 = R_*F3_
 	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
@@ -236,7 +236,7 @@ def Eq_Motion3(x):
 	FG1_ = R*np.matrix([[0],[M1*g]])
 	FG2_ = R*np.matrix([[0],[M2*g]])
 	F3_ = R*np.matrix([[0],[0]]) 
-	F2_ = mu_d*F3
+	F2_ = mu_d*F3_
 	F2 = R_*F2_
 	F3 = R_*F3_
 	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
@@ -253,9 +253,11 @@ def RK(x, f):
 	#print(x_)
 	return x_
 	
-def Cal_Mtlx(X0, t_s, t_f, l):
+def Cal_Mtlx(X0,Y0, t_s, t_f, l):
 	XX = np.empty((0,l), float)
 	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3],X0[4],X0[5],X0[6],X0[7], X0[8], X0[9]]]), axis=0)
+	YY = np.empty((0,l-2), float)
+	YY = np.append(YY, np.array([[Y0[0],Y0[1],Y0[2],Y0[3],Y0[4],Y0[5],Y0[6],Y0[7]]]), axis=0)
 	t = t_s
 	n = 0
 	while(t<t_f):
@@ -263,117 +265,71 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 		R_ = np.linalg.inv(R)
 		r2 = R_*np.matrix([[XX[n,4]],[XX[n,6]]])
 		v2 = R_*np.matrix([[XX[n,5]],[XX[n,7]]])
-			if r2[1,0]<0 and v2[1,0]<0:
+		if r2[1,0]<0 and v2[1,0]<0:
 				Step = RK(XX[n], Eq_Motion1)
 				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7],Step[8],Step[9]]])
+				Sxx1 = R_*np.matrix([[S[0,0]],[S[0,2]]])
+				Sxx2 = R_*np.matrix([[S[0,4]],[S[0,6]]])
+				Svv1 = R_*np.matrix([[S[0,1]],[S[0,3]]])
+				Svv2 = R_*np.matrix([[S[0,5]],[S[0,7]]])
+				Sy = np.array([[Sxx1[0,0],Svv1[0,0],Sxx1[1,0],Svv1[1,0],Sxx2[0,0],Svv2[0,0],Sxx2[1,0],Svv2[1,0]]])
 				XX = np.append(XX, S, axis=0)
+				YY = np.append(YY, Sy, axis=0)
 				print(n)
 				print("Using func1")
 				t = t+h
 				n = n+1
-			elif r2[1,0]<0 and v2[1,0]>=0:
+		elif r2[1,0]<0 and v2[1,0]>=0:
 				Step = RK(XX[n], Eq_Motion2)
 				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7],Step[8],Step[9]]])
+				Sxx1 = R_*np.matrix([[S[0,0]],[S[0,2]]])
+				Sxx2 = R_*np.matrix([[S[0,4]],[S[0,6]]])
+				Svv1 = R_*np.matrix([[S[0,1]],[S[0,3]]])
+				Svv2 = R_*np.matrix([[S[0,5]],[S[0,7]]])
+				Sy = np.array([[Sxx1[0,0],Svv1[0,0],Sxx1[1,0],Svv1[1,0],Sxx2[0,0],Svv2[0,0],Sxx2[1,0],Svv2[1,0]]])
 				XX = np.append(XX, S, axis=0)
+				YY = np.append(YY, Sy, axis=0)
+
 				print(n)
 				print("Using func2")
 				t = t+h
 				n = n+1
-			else:	
+		else:	
 				Step = RK(XX[n], Eq_Motion3)
 				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7],Step[8],Step[9]]])
+				Sxx1 = R_*np.matrix([[S[0,0]],[S[0,2]]])
+				Sxx2 = R_*np.matrix([[S[0,4]],[S[0,6]]])
+				Svv1 = R_*np.matrix([[S[0,1]],[S[0,3]]])
+				Svv2 = R_*np.matrix([[S[0,5]],[S[0,7]]])
+				Sy = np.array([[Sxx1[0,0],Svv1[0,0],Sxx1[1,0],Svv1[1,0],Sxx2[0,0],Svv2[0,0],Sxx2[1,0],Svv2[1,0]]])
 				XX = np.append(XX, S, axis=0)
+				YY = np.append(YY, Sy, axis=0)
+				YY = np.append(YY, Sy, axis=0)
+
 				print(n)
 				print("Using func3")
 				t = t+h
 				n = n+1
 
-	return np.matrix(XX)
+	return np.matrix(XX, YY)
 	
-def Cal_Mtl_NoSMA(X0, t_s, t_f, l):
-	XX = np.empty((0,l), float)
-	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3]]]), axis=0)
-	t = t_s
-	n = 0
-	while(t<t_f):
-			if XX[n,2]<0 and XX[n,3]<0:
-			#if 1>0:
-				Step = RK(XX[n], NoSMA_func2)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
-				#S = np.array([[Step[0],Step[1]]])
-				#S = np.array(Step)
-				XX = np.append(XX, S, axis=0)
-				print(n)
-				print("Using func1")
-				#print"term1 = {0}".format(term1)
-				#print"term2 = {0}".format(term2)
-				t = t+h
-				n = n+1
-			elif XX[n,2]<0 and XX[n,3]>=0:
-				Step = RK(XX[n], NoSMA_func3)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
-				#S = np.array([[Step[0],Step[1]]])
-				#S = np.array(Step)
-				XX = np.append(XX, S, axis=0)
-				print(n)
-				print("Using func2")
-				#print"term1 = {0}".format(term1)
-				#print"term2 = {0}".format(term2)
-				t = t+h
-				n = n+1
-			else:	
-				Step = RK(XX[n], NoSMA_func4)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3]]])
-				#S = np.array([[Step[0],Step[1]]])
-				#S = np.array(Step)
-				XX = np.append(XX, S, axis=0)
-				print(n)
-				print("Using func3")
-				t = t+h
-				n = n+1
-
-	return np.matrix(XX)
-
-def Cal_Test(X0, t_s, t_f, t_i, l):
-	XX = np.empty((0,l), float)
-	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3], X0[4], X0[5]]]), axis=0)
-	t = t_s
-	n = 0
-	while(t<t_f):
-			if t<t_i:
-				F1=1
-				F2=0
-				Step = RK(XX[n], MotionOfCOG, F1, F2)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3], Step[4], Step[5]]])
-				XX = np.append(XX, S, axis=0)
-				print(n)
-				t = t+h
-				n = n+1
-			else:
-				F1=0
-				F2=0
-				Step = RK(XX[n], MotionOfCOG, F1, F2)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3], Step[4], Step[5]]])
-				XX = np.append(XX, S, axis=0)
-				print(n)
-				t = t+h
-				n = n+1
-
-	return np.matrix(XX)
 
 def main():
 	t_s = 0.0
-	t_f = 10.0 
+	t_f = 5.0 
 	t_i = 0.1
-	v0 = 10
-	H = 1
+
 	theta_g = math.pi/4
-	#X0 = [math.cos(theta_g),0,math.sin(theta_g),0,theta_g, 0]
-	X0 = [0, 0, del_AE, 0, 0, 0, 0, 0, np.pi/4, 0]
+	R = np.matrix([[np.sin(theta_g), np.cos(theta_g)],[-np.cos(theta_g), np.sin(theta_g)]])
+	R_ = np.linalg.inv(R)
+	X0 = [0, 0, del_AE, 0, 0, 0, 0, 0, theta_g, 0]
+	yy1 = R_*np.matrix([[X0[0]],[X0[3]]])
+	Y0 = [yy1[0,0], 0, yy1[1,0], 0, 0, 0, 0, 0]
 	print(X0)
-	XX = Cal_Mtlx(X0, t_s, t_f, 10)
+	XX = Cal_Mtlx(X0,Y0, t_s, t_f, 10)[0]
 	print(XX)
-	T = np.arange(0, t_f+h, h)
+	#T = np.arange(0, t_f+h, h)
+	T = np.arange(0, t_f+2*h, h)
 	print("Length of T={0}".format(len(T)))
 	print("Size of XX")
 	row, col = XX.shape
@@ -385,21 +341,12 @@ def main():
 	plt.plot(T,XX[:,3], label="Velocity Z")
 	plt.plot(T,XX[:,4], label="Angle")
 	plt.plot(T,XX[:,5], label="Angular Velocity")
-	#ax = fig.gca(projection='3d')
-	#ax.plot(v[:, 0], v[:, 1], v[:, 2])
 	plt.title('2-Dimensional Behavior of the COG')
 	plt.xlabel('Time[s]')
 	plt.ylabel('Values')
 	#plt.xlim([0,2.16])
 	plt.legend()
 	plt.show()
-	#plt.plot(T,XX[:,1], label="Height of Rover's Body")
-	#plt.plot(T,XX[:,3], label="Velocity of Rover's Pad")
-	#plt.title('1-Dimensional Hopping of SMA Rover')
-	#plt.xlabel('Time[s]')
-	#plt.ylabel('Velocity[m/s]')
-	#plt.xlim([0,2.55])
-	#plt.legend()
-	#plt.show()
+
 if __name__ == '__main__':
 		main()
