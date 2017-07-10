@@ -191,97 +191,40 @@ def MotionOfCOG(x, F1, F2):
 	print(term3)
 	return np.array([x[1], term1, x[3], term2, x[5], term3])
 
-def Eq_Motion1(x):
-	R = np.matrix([[np.sin(x[8]), np.cos(x[8])],[-np.cos(x[8]), np.sin(x[8])]])
-	R_ = np.linalg.inv(R)
-	l2 = M1/(M1+M2) *(x[2]-x[6])
-	r2 = R_*np.matrix([[x[4]],[x[6]]])
-	v2 = R_*np.matrix([[x[5]],[x[7]]])
-	F1_ = k1*(l0-(x[2]-x[6])) - c1*(x[3]-x[7])
-	f = np.matrix([[0], [M1*g]])
-	FG1_ = R*f
-	FG2_ = R*np.matrix([[0],[M2*g]])
-	F3_ = R*np.matrix([[0],[-k2*r2[0,1]-c2*v2[0,1]]]) 
-	F2_ = mu_d*F3
-	F2 = R_*F2_
-	F3 = R_*F3_
-	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
-	
-	return np.array([x[1], FG1_[0,0]/M1, x[3], F1_/M1 + FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2, x[9], term_r ])
-
-def Eq_Motion2(x):
-	R = np.matrix([[np.sin(x[8]), np.cos(x[8])],[-np.cos(x[8]), np.sin(x[8])]])
-	R_ = np.linalg.inv(R)
-	l2 = M1/(M1+M2) *(x[2]-x[6])
-	r2 = R_*np.matrix([[x[4]],[x[6]]])
-	v2 = R_*np.matrix([[x[5]],[x[7]]])
-	F1_ = k1*(l0-(x[2]-x[6])) - c1*(x[3]-x[7])
-	FG1_ = R*np.matrix([[0],[M1*g]])
-	FG2_ = R*np.matrix([[0],[M2*g]])
-	F3_ = R*np.matrix([[0],[-k2*r2[0,1]]]) 
-	F2_ = mu_d*F3
-	F2 = R_*F2_
-	F3 = R_*F3_
-	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
-	
-	return np.array([x[1], FG1_[0,0]/M1, x[3], F1_/M1 + FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2, x[9], term_r ])
-
-def Eq_Motion3(x):
-	R = np.matrix([[np.sin(x[8]), np.cos(x[8])],[-np.cos(x[8]), np.sin(x[8])]])
-	R_ = np.linalg.inv(R)
-	l2 = M1/(M1+M2) *(x[2]-x[6])
-	r2 = R_*np.matrix([[x[4]],[x[6]]])
-	v2 = R_*np.matrix([[x[5]],[x[7]]])
-	F1_ = k1*(l0-(x[2]-x[6])) - c1*(x[3]-x[7])
-	FG1_ = R*np.matrix([[0],[M1*g]])
-	FG2_ = R*np.matrix([[0],[M2*g]])
-	F3_ = R*np.matrix([[0],[0]]) 
-	F2_ = mu_d*F3
-	F2 = R_*F2_
-	F3 = R_*F3_
-	term_r = l2*F2[0,0]*np.cos(x[8]) + l2*F3[1,0]*np.sin(x[8]) 
-	
-	return np.array([x[1], FG1_[0,0]/M1, x[3], F1_/M1 + FG1_[1,0]/M1, x[5], F2_[0,0]/M2 + F3_[0,0]/M2 + FG2_[0,0]/M2, x[7], F2_[1,0]/M2 + F3_[1,0]/M2 + FG2_[1,0]/M2 - F1_/M2, x[9], term_r ])
-
-
-def RK(x, f):
-	k1 = f(x)
-	k2 = f(x+0.5*h*k1)
-	k3 = f(x+0.5*h*k2)
-	k4 = f(x+h*k3)
+def RK(x, f, F1, F2):
+	k1 = f(x, F1, F2)
+	k2 = f(x+0.5*h*k1, F1, F2)
+	k3 = f(x+0.5*h*k2, F1, F2)
+	k4 = f(x+h*k3, F1, F2)
 	x_ = x + (h/6)*(k1+2*k2+2*k3+k4)
 	#print(x_)
 	return x_
 	
 def Cal_Mtlx(X0, t_s, t_f, l):
 	XX = np.empty((0,l), float)
-	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3],X0[4],X0[5],X0[6],X0[7], X0[8], X0[9]]]), axis=0)
+	XX = np.append(XX, np.array([[X0[0],X0[1],X0[2],X0[3],X0[4],X0[5],X0[6],X0[7]]]), axis=0)
 	t = t_s
 	n = 0
 	while(t<t_f):
-		R = np.matrix([[np.sin(XX[n,8]), np.cos(XX[n,8])],[-np.cos(XX[n,8]), np.sin(XX[n,8])]])
-		R_ = np.linalg.inv(R)
-		r2 = R_*np.matrix([[XX[n,4]],[XX[n,6]]])
-		v2 = R_*np.matrix([[XX[n,5]],[XX[n,7]]])
-			if r2[1,0]<0 and v2[1,0]<0:
-				Step = RK(XX[n], Eq_Motion1)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7],Step[8],Step[9]]])
+			if XX[n,6]<0 and XX[n,7]<0:
+				Step = RK(XX[n], TwoD_func1_Slip)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7]]])
 				XX = np.append(XX, S, axis=0)
 				print(n)
 				print("Using func1")
 				t = t+h
 				n = n+1
-			elif r2[1,0]<0 and v2[1,0]>=0:
-				Step = RK(XX[n], Eq_Motion2)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7],Step[8],Step[9]]])
+			elif XX[n,6]<0 and XX[n,7]>=0:
+				Step = RK(XX[n], TwoD_func2_Slip)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7]]])
 				XX = np.append(XX, S, axis=0)
 				print(n)
 				print("Using func2")
 				t = t+h
 				n = n+1
 			else:	
-				Step = RK(XX[n], Eq_Motion3)
-				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7],Step[8],Step[9]]])
+				Step = RK(XX[n], TwoD_func3_Slip)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],Step[4],Step[5],Step[6],Step[7]]])
 				XX = np.append(XX, S, axis=0)
 				print(n)
 				print("Using func3")
@@ -368,10 +311,9 @@ def main():
 	v0 = 10
 	H = 1
 	theta_g = math.pi/4
-	#X0 = [math.cos(theta_g),0,math.sin(theta_g),0,theta_g, 0]
-	X0 = [0, 0, del_AE, 0, 0, 0, 0, 0, np.pi/4, 0]
+	X0 = [math.cos(theta_g),0,math.sin(theta_g),0,theta_g, 0]
 	print(X0)
-	XX = Cal_Mtlx(X0, t_s, t_f, 10)
+	XX = Cal_Test(X0, t_s, t_f, t_i, 6)
 	print(XX)
 	T = np.arange(0, t_f+h, h)
 	print("Length of T={0}".format(len(T)))
