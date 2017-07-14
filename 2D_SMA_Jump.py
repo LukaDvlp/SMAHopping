@@ -358,7 +358,7 @@ def Cal_Mtlx(X0,Y0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 15.0 
+	t_f = 5.0 
 	t_i = 0.1
 
 	theta_g = math.pi/4
@@ -370,8 +370,8 @@ def main():
 	print(X0)
 	XX, YY = Cal_Mtlx(X0,Y0, t_s, t_f, 10)
 	print(XX)
-	#T = np.arange(0, t_f+h, h)
-	T = np.arange(0, t_f+2*h, h)
+	T = np.arange(0, t_f+h, h)
+	#T = np.arange(0, t_f+2*h, h)
 	print("Length of T={0}".format(len(T)))
 	print("Size of XX")
 	row, col = XX.shape
