@@ -8,13 +8,18 @@ from numpy import sin,cos
 import matplotlib.pyplot as plt
 
 #Setting of Parameters
-L1,L2 = 0.5,0.5
-m1,m2,g,=1,1,9.81
+l0 = 0.1 
+Df = 0.05
+m1,m2,g,=0.65,0.05,1.62
+r1,r2 = 0.05,0.05
+#I1,I2 = 2/5*m1*r1**3, 2/5*m2*r2**3
+I1,I2 = 0,0
+k1,k2 = 1400,1000
 
 #Initial State of the machanism
-th10,th20 = -np.pi/4, -np.pi/2
-x0 = np.array([[L1*cos(th10),0, L1*sin(th10),0, th10,0, \
-               2*L1*cos(th10)+L2*cos(th20),0, 2*L1*sin(th10)+L2*sin(th20),0, th20,0]])
+th10,th20 = -np.pi/4, -np.pi/4
+x0 = np.array([[(l0-Df)*cos(th10),0,(l0-Df)*sin(th10),0,th10,0, \
+               0,0,0,0, th20,0]])
 
 #Time Counter
 Ts,Te,h=0,5,0.0001
@@ -22,10 +27,10 @@ Ts,Te,h=0,5,0.0001
 def Eq_Motion(x,Qa,Qc):
 	term1 = (Qa[0,0]+Qc[0,0])/m1
 	term2 = (Qa[0,1]+Qc[0,1])/m1
-	term3 = (Qa[0,2]+Qc[0,2])/(m1*L1**2/3)
+	term3 = (Qa[0,2]+Qc[0,2])/(I1)
 	term4 = (Qa[0,3]+Qc[0,3])/m2
 	term5 = (Qa[0,4]+Qc[0,4])/m2
-	term6 = (Qa[0,5]+Qc[0,5])/(m2*L1**2/3)
+	term6 = (Qa[0,5]+Qc[0,5])/(I2)
 	return np.array([x[1],term1,x[3],term2,x[5],term3,x[7],term4,x[9],term5,x[11],term6])
 
 def RK(x,f,Qa,Qc):
@@ -42,32 +47,35 @@ def trans(XX,XA_):
 
 n = 0
 t = Ts
-XA_ = np.matrix([[L2],[0]])
+XA_ = np.matrix([[1],[0]])
 XX = np.empty((0,12),float)
 XA = np.empty((0,2),float)
 XX = np.append(XX,x0, axis=0)
 XA = trans(XX[n],XA_)
 while(t<Te):
-	#Coefficient matrix
+	Fk = k1*(l0-np.sqrt((XX[n,0]-XX[n,6])**2 + (XX[n,2]-XX[n,8])**2))
 	sth1,cth1=sin(XX[n,4]),cos(XX[n,4])
 	sth2,cth2=sin(XX[n,10]),cos(XX[n,10])
-	A = np.array([[m1,0,0,0,0,0,1,0,0,0],[0,m1,0,0,0,0,0,1,0,0],\
-	              [0,0,m1*L1**2/3,0,0,0,L1*sth1,-L1*cth1,L1*sth1,-L1*cth1],[0,0,0,m2,0,0,0,0,1,0], \
-				  [0,0,0,0,m2,0,0,0,0,1],[0,0,0,0,0,m2*L2**2/3,0,0,L2*sth2,-L2*cth2], \
-				  [1,0,L1*sth1,0,0,0,0,0,0,0],[0,1,-L1*cth1,0,0,0,0,0,0,0], \
-				  [0,0,L1*sth1,1,0,L2*sth2,0,0,0,0],[0,0,-L1*cth1,0,1,-L2*cth2,0,0,0,0]])
+	Fkx = Fk*sth1
+	#Fkx = Fk*sth2
+	Fky = Fk*cth1
+	#Fky = Fk*cth2
+	A = np.array([[m1,0,0,0,0,0,-sth2,0],[0,m1,0,0,0,0,cth2,0],\
+	              [0,0,I1,0,0,0,0,1],[0,0,0,m2,0,0,sth2,0], \
+				  [0,0,0,0,m2,0,-cth2,0],[0,0,0,0,0,I2,-sth2*(XX[n,2]-XX[n,8])-cth2*(XX[n,0]-XX[n,6]),-1], \
+				  [-sth2,-cth2,0,sth2,-cth2,-sth2*(XX[n,2]-XX[n,8])-cth2*(XX[n,0]-XX[n,6]),0,0], \
+				  [0,0,1,0,0,-1,0,0]]) 
 	
 	#The right side
-	b = np.array([0,-m1*g,0,0,-m2*g,0,-L1*XX[n,5]**2*cth1, -L1*XX[n,5]**2*sth1,\
-	              -L1*XX[n,5]**2*cth1-L2*XX[n,11]**2*cth2, -L1*XX[n,5]**2*sth1-L2*XX[n,11]**2*sth2])
+	b = np.array([Fkx,Fky-m1*g,0,-Fkx,-Fky-m2*g,0,XX[n,11]*sth2*(XX[n,11]*(XX[n,0]-XX[n,6])+2*(XX[n,9]-XX[n,3]))\
+	              +XX[n,11]*cth2*(XX[n,11]*(XX[n,2]-XX[n,8])+2*(XX[n,7]-XX[n,1])), 0])
 	
 	#Solution
 	x = np.linalg.solve(A,b)
 	
-	Phi_q = np.array([[1,0,L1*sth1,0,0,0],[0,1,-L1*cth1,0,0,0],[-1,0,L1*sth1,1,0,L2*sth2],\
-	                  [0,-1,-L1*cth1,0,1,-L2*cth2]])
-	Qa = np.array([[0,-m1*g,0,0,-m2*g,0]])
-	lam = np.matrix([[x[6],x[7],x[8],x[9]]]).T
+	Phi_q = np.array([[-sth2,cth2,0,sth2,-cth2,-sth2*(XX[n,2]-XX[n,8])-cth2*(XX[n,0]-XX[n,6])],[0,0,1,0,0,-1]])
+	Qa = np.array([[Fkx,Fky-m1*g,0,-Fkx,-Fky-m2*g,0]])
+	lam = np.matrix([[x[6],x[7]]]).T
 	Q = -Phi_q.T*lam
 	Qc = Q.T
 	
@@ -89,8 +97,11 @@ print("size of XA")
 rows1, cols1 = XA.shape
 print(rows1,cols1)
 print XA
-plt.plot(T, XA[:,0], label="x")
-plt.plot(T, XA[:,1], label="y")
-#plt.plot(T, XX[:,4], label="theta")
+plt.plot(T, XX[:,0], label="x1")
+plt.plot(T, XX[:,2], label="z1")
+plt.plot(T, XX[:,4], label="theta1")
+plt.plot(T, XX[:,6], label="x2")
+plt.plot(T, XX[:,8], label="z2")
+#plt.plot(T, XX[:,10], label="theta2")
 plt.legend()
 plt.show()
