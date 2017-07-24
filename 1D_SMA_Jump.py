@@ -205,7 +205,7 @@ def main():
 #	print(RK(X0)[1])
 	XX = Cal_Mtlx(X0, t_s, t_f, 4)
 	#YY = Cal_Mtl_NoSMA(X0, t_s, t_f, 4)
-	XX_x = math. 
+	#XX_x = math. 
 	print(XX)
 	#print(Time)
 	#T = np.arange(0, t_f+2*h, h)

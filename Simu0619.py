@@ -59,7 +59,7 @@ Yeild = 100
 
 #CHANGABLE PARAMETERS 
 m = 0.7 
-Theta = 30.0
+Theta = 45.0
 number = 2 
 n = 10 
 D = 6.2  #Diameter of Coil[mm]

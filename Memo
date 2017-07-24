@@ -1,28 +1,6 @@
-	fig = plt.figure()
-	ax = fig.add_subplot(111, autoscale_on=False, xlim=(0, 3.5), ylim=(0, 1))
-	ax.grid()
-	
-	line, = ax.plot([], [], '-o', lw=3)
-	time_template = 'time = %.1fs'
-	time_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
-	
-	
-	def init():
-	    line.set_data([], [])
-	    time_text.set_text('')
-	    return line, time_text
-	
-	
-	def animate(i):
-	    thisx = [XX[i*20,0], XX[i*20,4]]
-	    thisy = [XX[i*20,2], XX[i*20,6]]
-	
-	    line.set_data(thisx, thisy)
-	    time_text.set_text(time_template % (i*10*h))
-	    return line, time_text
-	
-	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)/20),
-	                              interval=1, blit=False, init_func=init)
-	
-	ani.save("double_pendulum.gif", writer = 'ffmpeg')
-	plt.show()
+del_AE = Simu0619.delta_AE / 1000
+del_s = Simu0619.delta_s / 1000
+del_ME = Simu0619.delta_ME / 1000
+F_s = Simu0619.F_s 
+A = 1/Simu0619.A * 1000 
+
