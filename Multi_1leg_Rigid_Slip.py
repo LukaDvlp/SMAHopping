@@ -13,11 +13,13 @@ k2 = 1000  #Spring Coefficient of the ground [N/mm]
 c2 = 100 #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
 DZ = 0.05    #Initial Deflextion of Bias Spring [mm]
-h = 0.0001   #Interval of RK
+h = 0.000001   #Interval of RK
 d = 1    #Diameter of SMA wire [mm]
 D = 6.8  #Diameter of SMA coil [mm]
 n = 10   #Number of coil spring
 del_AE = 0.04301 
+mu = 0.8
+mu_d = 0.5
 
 def func1(x, l):
 	#l = np.sqrt((x[0]-x[2])**2 + (x[1]-x[3])**2)
@@ -26,8 +28,12 @@ def func1(x, l):
 	f = k1 * (l0 -l) - c1 * dl
 	term1 = f*np.cos(th) / m1
 	term2 = f*np.sin(th) / m1 - g
-	term3 = 0
-	term4 = 0 
+	if f*np.cos(th) < mu*f*np.sin(th):
+		term3 = 0
+		term4 = 0 
+	else:
+		term3 = mu_d*f*np.sin(th) - f*np.cos(th)
+		term4 = 0 
 	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7],term4])
 
 def func2(x, l):
@@ -126,11 +132,14 @@ def main():
 	th0 = np.pi/4
 	X0 = [del_AE*np.cos(th0),0,del_AE*np.sin(th0),0,0,0,0,0]
 	print(X0)
+#	print(RK(X0))
+#	print(RK(X0)[1])
 	XX = Cal_Mtlx(X0, t_s, t_f, 8)
 	print(XX)
 
 	#print(Time)
 	#T = np.arange(0, t_f+2*h, h)
+#	print(T)
 	print("Size of XX")
 	row, col = XX.shape
 	print(row, col)
@@ -153,7 +162,7 @@ def main():
 	plt.xlim([0,XX[row-1,0]])
 	plt.legend()
 	#plt.show()
-
+	
 	fig = plt.figure()
 	ax = fig.add_subplot(111, autoscale_on=False, xlim=(0, 3.5), ylim=(0, 1))
 	ax.grid()
@@ -168,19 +177,19 @@ def main():
 	    time_text.set_text('')
 	    return line, time_text
 	
-	
+	Time_g = 2000	
 	def animate(i):
-	    thisx = [XX[i*20,0], XX[i*20,4]]
-	    thisy = [XX[i*20,2], XX[i*20,6]]
+	    thisx = [XX[i*Time_g,0], XX[i*Time_g,4]]
+	    thisy = [XX[i*Time_g,2], XX[i*Time_g,6]]
 	
 	    line.set_data(thisx, thisy)
-	    time_text.set_text(time_template % (i*20*h))
+	    time_text.set_text(time_template % (i*Time_g*h))
 	    return line, time_text
 	
-	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)/20),
+	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)),
 	                              interval=1, blit=False, init_func=init)
 	
-	ani.save("double_pendulum.gif", writer = 'ffmpeg')
+	#ani.save("double_pendulum.gif", writer = 'ffmpeg')
 	plt.show()
 if __name__ == '__main__':
 		main()

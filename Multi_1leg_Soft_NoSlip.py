@@ -24,10 +24,11 @@ def func1(x, l):
 	dl = ((x[0]-x[4])*(x[1]-x[5])+(x[2]-x[6])*(x[3]-x[7]))/l
 	th = np.arctan((x[2]-x[6])/(x[0]-x[4]))
 	f = k1 * (l0 -l) - c1 * dl
+	#f = k1 * (l0 -l) - 0 * dl
 	term1 = f*np.cos(th) / m1
 	term2 = f*np.sin(th) / m1 - g
 	term3 = 0
-	term4 = 0 
+	term4 = (-f*np.sin(th) - m2*g - k2*x[6] -c2*x[7]) / m2
 	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7],term4])
 
 def func2(x, l):
@@ -35,10 +36,45 @@ def func2(x, l):
 	dl = ((x[0]-x[4])*(x[1]-x[5])+(x[2]-x[6])*(x[3]-x[7]))/l
 	th = np.arctan((x[2]-x[6])/(x[0]-x[4]))
 	f = k1 * (l0 -l) - c1 * dl
+	#f = k1 * (l0 -l) - 0 * dl
 	term1 = f*np.cos(th) / m1
 	term2 = f*np.sin(th) / m1 - g
-	term3 = -f*np.cos(th) / m2 
-	term4 = -f*np.sin(th) / m2 -g 
+	term3 = 0
+	term4 = (-f*np.sin(th) - m2*g - k2*x[6]) / m2
+	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7],term4])
+
+def func3(x, l):
+	#l = np.sqrt((x[0]-x[2])**2 + (x[1]-x[3])**2)
+	dl = ((x[0]-x[4])*(x[1]-x[5])+(x[2]-x[6])*(x[3]-x[7]))/l
+	th = np.arctan((x[2]-x[6])/(x[0]-x[4]))
+	f = k1 * (l0 -l) - c1 * dl
+	#f = k1 * (l0 -l) - 0 * dl
+	if x[0]-x[4]>=0 and x[2]-x[6]>=0:
+		th = np.arctan((x[2]-x[6])/(x[0]-x[4]))
+		term1 = f*np.cos(th) / m1
+		term2 = f*np.sin(th) / m1 - g
+		term3 = -f*np.cos(th) /m2  
+		term4 = (-f*np.sin(th) - m2*g) / m2
+	elif x[0]-x[4]>=0 and x[2]-x[6]<0:
+		th = np.arctan((x[6]-x[2])/(x[0]-x[4]))
+		term1 = f*np.cos(th) / m1
+		term2 = -f*np.sin(th) / m1 - g
+		term3 = -f*np.cos(th) /m2  
+		term4 = (f*np.sin(th) - m2*g) / m2
+	elif x[0]-x[4]<0 and x[2]-x[6]<0:
+		th = np.arctan((x[6]-x[2])/(x[4]-x[0]))
+		term1 = -f*np.cos(th) / m1
+		term2 = -f*np.sin(th) / m1 - g
+		term3 = f*np.cos(th) /m2  
+		term4 = (f*np.sin(th) - m2*g) / m2
+	else:
+		th = np.arctan((x[2]-x[6])/(x[4]-x[0]))
+		term1 = -f*np.cos(th) / m1
+		term2 = f*np.sin(th) / m1 - g
+		term3 = f*np.cos(th) /m2  
+		term4 = (-f*np.sin(th) - m2*g) / m2
+
+
 	return np.array([x[1], term1, x[3], term2, x[5], term3, x[7],term4])
 
 
@@ -88,9 +124,9 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 	t = t_s
 	n = 0
 	while(t<t_f):
-			l = np.sqrt((XX[n,0]-XX[n,4])**2 + (XX[n,2]-XX[n,6])**2)
+			l = np.sqrt(np.absolute(XX[n,0]-XX[n,4])**2 + np.absolute(XX[n,2]-XX[n,6])**2)
 			#if XX[n,2]<0 and XX[n,3]<0:
-			if l0 - l > 0:
+			if XX[n,6]< 0 and XX[n,7]<0:
 				Step = RK(XX[n], func1, l)
 				S = np.array([[Step[0],Step[1],Step[2],Step[3],\
 				               Step[4],Step[5],Step[6],Step[7]]])
@@ -101,22 +137,40 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 				#print"term2 = {0}".format(term2)
 				t = t+h
 				n = n+1
-			else:	
-				break
-
-	while(t<t_f):
-			l = np.sqrt((XX[n,0]-XX[n,4])**2 + (XX[n,2]-XX[n,6])**2)
-			if XX[n,2] >= 0 and XX[n,6] >= 0:
+			elif XX[n,6]<0 and XX[n,7]>=0:	
 				Step = RK(XX[n], func2, l)
 				S = np.array([[Step[0],Step[1],Step[2],Step[3],\
-			               Step[4],Step[5],Step[6],Step[7]]])
+				               Step[4],Step[5],Step[6],Step[7]]])
 				XX = np.append(XX, S, axis=0)
 				print(n)
 				print("Using func2")
 				t = t+h
 				n = n+1
-			else:
+			elif XX[n,2]<0 or XX[n,6]<0:
 				break
+			else:
+				Step = RK(XX[n], func3, l)
+				S = np.array([[Step[0],Step[1],Step[2],Step[3],\
+				               Step[4],Step[5],Step[6],Step[7]]])
+				XX = np.append(XX, S, axis=0)
+				print(n)
+				print("Using func3")
+				t = t+h
+				n = n+1
+
+#	while(t<t_f):
+#			l = np.sqrt((XX[n,0]-XX[n,4])**2 + (XX[n,2]-XX[n,6])**2)
+#			if XX[n,2] >= 0 and XX[n,6] >= 0:
+#				Step = RK(XX[n], func2, l)
+#				S = np.array([[Step[0],Step[1],Step[2],Step[3],\
+#			               Step[4],Step[5],Step[6],Step[7]]])
+#				XX = np.append(XX, S, axis=0)
+#				print(n)
+#				print("Using func2")
+#				t = t+h
+#				n = n+1
+#			else:
+#				break
 
 	return np.matrix(XX)
 
@@ -168,19 +222,19 @@ def main():
 	    time_text.set_text('')
 	    return line, time_text
 	
-	
+	TM_thin = 20	
 	def animate(i):
-	    thisx = [XX[i*20,0], XX[i*20,4]]
-	    thisy = [XX[i*20,2], XX[i*20,6]]
+	    thisx = [XX[i*TM_thin,0], XX[i*TM_thin,4]]
+	    thisy = [XX[i*TM_thin,2], XX[i*TM_thin,6]]
 	
 	    line.set_data(thisx, thisy)
-	    time_text.set_text(time_template % (i*20*h))
+	    time_text.set_text(time_template % (i*TM_thin*h))
 	    return line, time_text
 	
-	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)/20),
+	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)/TM_thin),
 	                              interval=1, blit=False, init_func=init)
 	
-	ani.save("double_pendulum.gif", writer = 'ffmpeg')
+	#ani.save("double_pendulum.gif", writer = 'ffmpeg')
 	plt.show()
 if __name__ == '__main__':
 		main()
