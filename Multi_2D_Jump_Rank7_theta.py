@@ -12,8 +12,8 @@ l0 = 0.1
 Df = 0.05
 m1,m2,g,=0.65,0.05,1.62
 r1,r2 = 0.05,0.05
-I1,I2 = 2/5*m1*r1**3, 2/5*m2*r2**3
-#I1,I2 = 0,0
+#I1,I2 = 2/5*m1*r1**3, 2/5*m2*r2**3
+I1,I2 = 0,0
 k1,k2 = 1400,1000
 
 #Initial State of the machanism
@@ -53,29 +53,35 @@ XA = np.empty((0,2),float)
 XX = np.append(XX,x0, axis=0)
 XA = trans(XX[n],XA_)
 while(t<Te):
-	Fk = k1*(l0-np.sqrt((XX[n,0]-XX[n,6])**2 + (XX[n,2]-XX[n,8])**2))
+	#Fk = k1*(l0-np.sqrt((XX[n,0]-XX[n,6])**2 + (XX[n,2]-XX[n,8])**2))
+	l = np.sqrt((XX[n,0]-XX[n,6])**2 + (XX[n,2]-XX[n,8])**2)
+	f = k1*(l0-l)
 	sth1,cth1=sin(XX[n,4]),cos(XX[n,4])
 	sth2,cth2=sin(XX[n,10]),cos(XX[n,10])
-	Fkx = Fk*sth1
-	#Fkx = Fk*sth2
-	Fky = Fk*cth1
-	#Fky = Fk*cth2
-	A = np.array([[m1,0,0,0,0,0,-sth2,0],[0,m1,0,0,0,0,cth2,0],\
-	              [0,0,I1,0,0,0,0,1],[0,0,0,m2,0,0,sth2,0], \
-				  [0,0,0,0,m2,0,-cth2,0],[0,0,0,0,0,I2,-sth2*(XX[n,2]-XX[n,8])-cth2*(XX[n,0]-XX[n,6]),-1], \
-				  [-sth2,cth2,0,sth2,-cth2,-sth2*(XX[n,2]-XX[n,8])-cth2*(XX[n,0]-XX[n,6]),0,0], \
-				  [0,0,1,0,0,-1,0,0]]) 
+	A1 = -sth1*(XX[n,2]-XX[n,8])-cth1*(XX[n,0]-XX[n,6])
+	A2 = -sth2*(XX[n,2]-XX[n,8])-cth2*(XX[n,0]-XX[n,6])
+	Ath1 = XX[n,5]*cth1*(XX[n,5]*(XX[n,2]-XX[n,8])+2*(XX[n,1]-XX[n,7])) \
+           - XX[n,5]*sth1*(XX[n,5]*(XX[n,0]-XX[n,6])-2*(XX[n,3]-XX[n,9]))
+	Ath2 = XX[n,11]*cth2*(XX[n,11]*(XX[n,2]-XX[n,8])+2*(XX[n,1]-XX[n,7])) \
+           - XX[n,11]*sth2*(XX[n,11]*(XX[n,0]-XX[n,6])-2*(XX[n,3]-XX[n,9]))
+
+	A = np.array([[m1,0,0,0,0,0,0],[0,m1,0,0,0,0,0],\
+	              [0,0,I1,0,0,0,1],[0,0,0,m2,0,0,0], \
+				  [0,0,0,0,m2,0,0],[0,0,0,0,0,I2,-1], \
+				  [0,0,1,0,0,-1,0]]) 
 	
 	#The right side
-	b = np.array([Fkx,Fky-m1*g,0,-Fkx,-Fky-m2*g,0,XX[n,11]*sth2*(XX[n,11]*(XX[n,0]-XX[n,6])+2*(XX[n,9]-XX[n,3]))\
-	              +XX[n,11]*cth2*(XX[n,11]*(XX[n,2]-XX[n,8])+2*(XX[n,7]-XX[n,1])), 0])
+	b = np.array([[f/l*(XX[n,0]-XX[n,6]),f/l*(XX[n,2]-XX[n,8]),0,\
+	             -f/l*(XX[n,0]-XX[n,6]),-f/l*(XX[n,2]-XX[n,8]),0, \
+				 0]]).T
 	
 	#Solution
 	x = np.linalg.solve(A,b)
 	
-	Phi_q = np.array([[-sth2,cth2,0,sth2,-cth2,-sth2*(XX[n,2]-XX[n,8])-cth2*(XX[n,0]-XX[n,6])],[0,0,1,0,0,-1]])
-	Qa = np.array([[Fkx,Fky-m1*g,0,-Fkx,-Fky-m2*g,0]])
-	lam = np.matrix([[x[6],x[7]]]).T
+	Phi_q = np.array([[0,0,1,0,0,-1]])
+	Qa = np.array([[f/l*(XX[n,0]-XX[n,6]),f/l*(XX[n,2]-XX[n,8]),0,\
+	               -f/l*(XX[n,0]-XX[n,6]),-f/l*(XX[n,2]-XX[n,8]),0]])
+	lam = np.matrix([[x[6]]]).T
 	Q = -Phi_q.T*lam
 	Qc = Q.T
 	

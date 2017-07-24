@@ -1,0 +1,4 @@
+def trans(XX,XA_):
+	R = np.matrix([[cos(XX[10]),-sin(XX[10])],[sin(XX[10]),cos(XX[10])]])
+	return R*XA_ + np.matrix([[XX[6]],[XX[8]]])
+
