@@ -7,7 +7,7 @@ import Simu0619
 m1 = 0.65  #Mass of Body [Kg]
 m2 = 0.05 #Mass of Pad [Kg]
 g = 1.622  #Gravitational Acceleration [m/s^2] 
-k1 = 1400   #Bias Spring Coefficient [N/m]
+k1 = 1060   #Bias Spring Coefficient [N/m]
 c1 = 1  #Damping Coefficient of Spring [Ns/mm] 
 l0 = 0.1  #Natural Length of Bias Spring [m]
 k2 = 1000  #Spring Coefficient of the ground [N/mm]
@@ -19,7 +19,7 @@ d = 1    #Diameter of SMA wire [mm]
 D = 6.8  #Diameter of SMA coil [mm]
 n = 10   #Number of coil spring
 mu = 0.8
-mu_d = 0.5
+mu_d = 0.6
 del_AE = Simu0619.delta_AE / 1000
 del_s = Simu0619.delta_s / 1000
 del_ME = Simu0619.delta_ME / 1000
@@ -159,20 +159,25 @@ def main():
 	print("Length of T={0}".format(len(T)))
 
 	plt.figure()
+	plt.title('Hopping Distance X,Z w.r.t Time')
+	plt.xlabel('Time[s]')
+	plt.ylabel('Hopping Height[m]')
 	plt.plot(T,XX[:,0], label="x1")
 	plt.plot(T,XX[:,2], label="z1")
 	plt.plot(T,XX[:,4], label="x2")
 	plt.plot(T,XX[:,6], label="z2")
 	plt.xlim([0,T[row-1]])
 	plt.legend()
+	plt.savefig("Rigid_Slip_T-XZ.png")
 	
 	plt.figure()
 	plt.plot(XX[:,0],XX[:,2], label="m1")
-	plt.title('1-Dimensional Hopping of Spring Only Rover')
-	plt.xlabel('Time[s]')
-	plt.ylabel('Hopping Height[m]')
+	plt.title('Hopping Trajectory Z w.r.t X')
+	plt.xlabel('Distance X[m]')
+	plt.ylabel('Distance Z[m]')
 	plt.xlim([0,XX[row-1,0]])
 	plt.legend()
+	plt.savefig("Rigid_Slip_XZ.png")
 	#plt.show()
 	
 	fig = plt.figure()
@@ -202,7 +207,7 @@ def main():
 	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)/Time_g),
 	                              interval=1, blit=False, init_func=init)
 	
-	#ani.save("double_pendulum.mp4", writer = 'imagemagick')
+	ani.save("Rigid_Slip.gif", writer = 'imagemagick')
 	plt.show()
 if __name__ == '__main__':
 		main()

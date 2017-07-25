@@ -7,11 +7,11 @@ import Simu0619
 m1 = 0.65  #Mass of Body [Kg]
 m2 = 0.05 #Mass of Pad [Kg]
 g = 1.622  #Gravitational Acceleration [m/s^2] 
-k1 = 1400   #Bias Spring Coefficient [N/m]
+k1 = 1060   #Bias Spring Coefficient [N/m]
 c1 = 1  #Damping Coefficient of Spring [Ns/mm] 
 l0 = 0.1  #Natural Length of Bias Spring [m]
 k2 = 1000  #Spring Coefficient of the ground [N/mm]
-c2 = 100 #Damping Coefficient [Ns/mm]
+c2 = 1000 #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
 DZ = 0.05    #Initial Deflextion of Bias Spring [mm]
 h = 0.0001   #Interval of RK
@@ -267,8 +267,6 @@ def main():
 	XX = Cal_Mtlx(X0, t_s, t_f, 8)
 	print(XX)
 
-	#print(Time)
-	#T = np.arange(0, t_f+2*h, h)
 	print("Size of XX")
 	row, col = XX.shape
 	print(row, col)
@@ -276,20 +274,25 @@ def main():
 	print("Length of T={0}".format(len(T)))
 
 	plt.figure()
+	plt.title('Hopping Distance X,Z w.r.t Time')
+	plt.xlabel('Time[s]')
+	plt.ylabel('Hopping Height[m]')
 	plt.plot(T,XX[:,0], label="x1")
 	plt.plot(T,XX[:,2], label="z1")
 	plt.plot(T,XX[:,4], label="x2")
 	plt.plot(T,XX[:,6], label="z2")
 	plt.xlim([0,T[row-1]])
 	plt.legend()
+	#plt.savefig("Soft_NoSlip_T-XZ.png")
 	
 	plt.figure()
-	plt.plot(XX[:,0],XX[:,2], label="m1")
-	plt.title('1-Dimensional Hopping of Spring Only Rover')
-	plt.xlabel('Time[s]')
-	plt.ylabel('Hopping Height[m]')
+	plt.plot(XX[:,0],XX[:,2], label="Body")
+	plt.title('Hopping Trajectory Z w.r.t X')
+	plt.xlabel('Distance X[m]')
+	plt.ylabel('Distance Z[m]')
 	plt.xlim([0,XX[row-1,0]])
 	plt.legend()
+	plt.savefig("Soft_NoSlip_XZ.png")
 	#plt.show()
 
 	fig = plt.figure()
@@ -319,7 +322,7 @@ def main():
 	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)/TM_thin),
 	                              interval=1, blit=False, init_func=init)
 	
-	#ani.save("double_pendulum.gif", writer = 'ffmpeg')
+	#ani.save("Soft_NoSlip.gif", writer = 'imagemagick')
 	plt.show()
 if __name__ == '__main__':
 		main()
