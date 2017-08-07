@@ -1,4 +1,5 @@
 import numpy as np
+from numpy import sin, cos, pi
 
 def test():
 	x=1
@@ -15,5 +16,8 @@ def main():
 	M = test()[1]
 	N = test()[0]
 	print M,N
+
+	print pi
+	print np.pi
 if __name__ == '__main__':
 		main()
