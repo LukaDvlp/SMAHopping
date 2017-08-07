@@ -390,25 +390,40 @@ def main():
 	                                              ylim=(-0.05, XX[row-1,0]+0.1))
 	ax.grid()
 	
-	#line, = ax.plot([], [],  '-o', lw=3)
-	line, = ax.plot([], [],  'o', lw=3)
+	#line, = ax.plot([], [],  '-o', lw=3, color = 'blue')
+	line1, = ax.plot([], [],  '-o', lw=3, color = 'blue')
+	line2, = ax.plot([], [],  '-o', lw=3, color = 'blue')
+	line3, = ax.plot([], [],  '-o', lw=3, color = 'blue')
+	line4, = ax.plot([], [],  '-o', lw=3, color = 'blue')
 	time_template = 'time = %.1fs'
 	time_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
 	
 	
 	def init():
-	    line.set_data([], [])
+	    line1.set_data([], [])
+	    line2.set_data([], [])
+	    line3.set_data([], [])
+	    line4.set_data([], [])
 	    time_text.set_text('')
-	    return line, time_text
+	    return line1, line2, line3, line4, time_text
 	
 	TM_thin = 20	
 	def animate(i):
-	    thisx = [XX[i*TM_thin,0], XX[i*TM_thin,4], YY[i*TM_thin,0], YY[i*TM_thin,2], YY[i*TM_thin,4]]
-	    thisy = [XX[i*TM_thin,2], XX[i*TM_thin,6], YY[i*TM_thin,1], YY[i*TM_thin,3], YY[i*TM_thin,5]]
+	    thisx1 = [XX[i*TM_thin,0], XX[i*TM_thin,4]]
+	    thisy1 = [XX[i*TM_thin,2], XX[i*TM_thin,6]]
+	    thisx2 = [XX[i*TM_thin,0], YY[i*TM_thin,0]]
+	    thisy2 = [XX[i*TM_thin,2], YY[i*TM_thin,1]]
+	    thisx3 = [XX[i*TM_thin,0], YY[i*TM_thin,2]]
+	    thisy3 = [XX[i*TM_thin,2], YY[i*TM_thin,3]]
+	    thisx4 = [XX[i*TM_thin,0], YY[i*TM_thin,4]]
+	    thisy4 = [XX[i*TM_thin,2], YY[i*TM_thin,5]]
 	
-	    line.set_data(thisx, thisy)
+	    line1.set_data(thisx1, thisy1)
+	    line2.set_data(thisx2, thisy2)
+	    line3.set_data(thisx3, thisy3)
+	    line4.set_data(thisx4, thisy4)
 	    time_text.set_text(time_template % (i*TM_thin*h))
-	    return line, time_text
+	    return line1, line2, line3, line4, time_text
 	
 	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)/TM_thin),
 	                              interval=1, blit=False, init_func=init)
