@@ -302,19 +302,13 @@ def main():
 	                                              ylim=(-0.05, XX[row-1,0]+0.1))
 	ax.grid()
 	
-	line1, = ax.plot([], [], '-o', lw=3)
-	line2, = ax.plot([], [], '-o', lw=3)
-	line3, = ax.plot([], [], '-o', lw=3)
-	line4, = ax.plot([], [], '-o', lw=3)
+	line, = ax.plot([], [], '-o', lw=3)
 	time_template = 'time = %.1fs'
 	time_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
 	
 	
 	def init():
-	    line1.set_data([], [])
-	    line2.set_data([], [])
-	    line3.set_data([], [])
-	    line4.set_data([], [])
+	    line.set_data([], [])
 	    time_text.set_text('')
 	    return line, time_text
 	
