@@ -59,9 +59,9 @@ Yeild = 100
 
 #CHANGABLE PARAMETERS 
 m = 0.7 
-Theta = 45.0
+Theta = 90.0 
 number = 2 
-n = 10 
+n = 15 
 D = 6.2  #Diameter of Coil[mm]
 d = 1.2  #Diameter of Wire[mm]
 solid_height = d*n ##solid height of SMA spring[mm]

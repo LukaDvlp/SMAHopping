@@ -4,13 +4,14 @@
 #DPend2: Dynamic analysis program for Double Rigid Pendulum
 #=============================================================
 import numpy as np
-from numpy import sin,cos
+from numpy import sin,cos, pi
 import matplotlib.pyplot as plt
 
 #Setting of Parameters
 l0 = 0.1 
 Df = 0.05
 m1,m2,g,=0.65,0.05,1.62
+m3 = 0.5
 r1,r2 = 0.05,0.05
 #I1,I2 = 2/5*m1*r1**3, 2/5*m2*r2**3
 I1,I2 = 0,0
@@ -53,23 +54,29 @@ XA = np.empty((0,2),float)
 XX = np.append(XX,x0, axis=0)
 XA = trans(XX[n],XA_)
 while(t<Te):
-	#Fk = k1*(l0-np.sqrt((XX[n,0]-XX[n,6])**2 + (XX[n,2]-XX[n,8])**2))
-	l = np.sqrt((XX[n,0]-XX[n,6])**2 + (XX[n,2]-XX[n,8])**2)
-	f = k1*(l0-l)
-	sth1,cth1=sin(XX[n,4]),cos(XX[n,4])
-	sth2,cth2=sin(XX[n,10]),cos(XX[n,10])
-	#Fkx = Fk*sth1
-	#Fkx = Fk*sth2
-	#Fky = Fk*cth1
-	#Fky = Fk*cth2
-	A = np.array([[m1,0,0,0,0,0,-sth1],[0,m1,0,0,0,0,cth1],\
-	              [0,0,I1,0,0,0,-sth1*(XX[n,2]-XX[n,8])-cth1*(XX[n,0]-XX[n,6])],[0,0,0,m2,0,0,sth1], \
-				  [0,0,0,0,m2,0,-cth1],[0,0,0,0,0,I2,0], \
-				  [-sth1,cth1,-sth1*(XX[n,2]-XX[n,8])-cth1*(XX[n,0]-XX[n,6]),sth1,-cth1,0,0]]) 
+	#Fk = k1*(l0-np.sqrt((XX[n,0]-XX[n,4])**2 + (XX[n,2]-XX[n,6])**2))
+	l1 = np.sqrt((XX[n,0]-XX[n,4])**2 + (XX[n,2]-XX[n,6])**2)
+	l2 = np.sqrt((XX[n,8]-XX[n,0])**2 + (XX[n,10]-XX[n,2])**2)
+	f1 = k1*(l0-l1)
+	f2 = k1*(l0-l2)
+	#sth1,cth1=sin(XX[n,4]),cos(XX[n,4])
+	th1 = np.arctan((XX[n,2]-XX[n,6])/(XX[n,0]-XX[n,4]))
+	#sth2,cth2=sin(XX[n,10]),cos(XX[n,10])
+	th2 = np.arctan((XX[n,10]-XX[n,2])/(XX[n,8]-XX[n,0]))
+	A = np.array([[m1,0,0,0,0,0,XX[n,6]-XX[n,10]],[0,m1,0,0,0,0,XX[n,8]-XX[n,0]],\
+	              [0,0,m2,0,0,0,XX[n,10]-XX[n,3]],[0,0,0,m2,0,0,0,XX[n,0]-XX[n,8]], \
+				  [0,0,0,0,m3,0,XX[n,2]-XX[n,6]],[0,0,0,0,0,m3,XX[n,4]-XX[n,0]], \
+				  [XX[n,6]-XX[n,10], XX[n,8]-XX[n,0], XX[n,10]-XX[n,3], XX[n,0]-XX[n,8], \
+				  XX[n,2]-XX[n,6], XX[n,4]-XX[n,0],0]]) 
 	
 	#The right side
-	b = np.array([f/l*(XX[n,0]-XX[n,6]),f/l*(XX[n,2]-XX[n,8]),0,\
-	             -f/l*(XX[n,0]-XX[n,6]),-f/l*(XX[n,2]-XX[n,8]),0, \
+	b = np.array([f1*cos(th1)-f2*cos(th2),\
+	              f1*sin(th1)-f2*sin(th2)-m1*g,\
+				  -f1*cos(th1),\
+				  -f1*sin(th1)-m2*g,\
+				  f2*cos(th2), \
+				  f2*sin(th2) - m3*g,\
+				  
 				  XX[n,5]*cth1*(XX[n,5]*(XX[n,2]-XX[n,8])+2*(XX[n,1]-XX[n,7])) \
 				  - XX[n,5]*sth1*(XX[n,5]*(XX[n,0]-XX[n,6])-2*(XX[n,3]-XX[n,9]))])
 	

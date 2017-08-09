@@ -6,6 +6,7 @@ import matplotlib.animation as animation
 import Simu0619
 
 m1 = 0.8  #Mass of Body [Kg]
+#m1 = 0.7 + 2*6  #Mass of Body [Kg]
 m2 = 0.05 #Mass of Pad [Kg]
 g = 1.622  #Gravitational Acceleration [m/s^2] 
 k1 = 1060   #Bias Spring Coefficient [N/m]
@@ -29,7 +30,7 @@ A = 1/Simu0619.A * 1000
 L = 0.1             #Length of legs
 R90 = np.matrix([[cos(pi/2), -sin(pi/2)],[sin(pi/2), cos(pi/2)]])
 R270 = np.matrix([[cos(3*pi/2), -sin(3*pi/2)],[sin(3*pi/2), cos(3*pi/2)]])
-th0 = np.pi/4
+th0 = np.arctan(L/del_AE) 
 	
 
 def func1(x, l):
@@ -343,7 +344,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 1.0 
+	t_f = 5.0 
 	#th0 = np.pi/4
 	X0 = [del_AE*np.cos(th0),0,del_AE*np.sin(th0),0,0,0,0,0]
 	#X0 = [P1[0],0,P1[1],0,0,0,0,0, P3[0], 0, P3[1], 0, P4[0], 0, P4[1], 0, P5[0], 0, P5[1], 0]
