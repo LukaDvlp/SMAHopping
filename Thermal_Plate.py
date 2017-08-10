@@ -81,7 +81,8 @@ def T_Eq1(x, Tg, I):   #Where Tg>Tb, with plate
 	print("value1={0}".format(value1))
 	print("value2={0}".format(value2))
 	print("value3={0}".format(value3))
-	q = value1-value2+value3
+	#q = value1-value2+value3
+	q = value1-value2
 	return q
 
 def T_Eq2(x, Tg, I):   #Where Tb>Tg, with plate
@@ -91,7 +92,8 @@ def T_Eq2(x, Tg, I):   #Where Tb>Tg, with plate
 	print("value1={0}".format(value1))
 	print("value2={0}".format(value2))
 	print("value3={0}".format(value3))
-	q = -value1-value2+value3
+	#q = -value1-value2+value3
+	q = -value1-value2
 	return q
 
 def RK(x,f):  
@@ -169,16 +171,16 @@ def main():
 	t_f = 2000.0 
 	t = 0
 	n = 0
-	X0 = [20+273]
+	X0 = [80+273]
 	print(X0)
-#	Tg = 120+273
-#	XX1 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
-#	Tg = 80+273
-#	XX2 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
-#	Tg = 50+273
-#	XX3 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
-#	Tg = 20+273
-#	XX4 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
+	Tg = 120+273
+	XX1 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
+	Tg = 80+273
+	XX2 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
+	Tg = 50+273
+	XX3 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
+	Tg = 20+273
+	XX4 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
 	Tg = 0+273
 	XX5 = Cal_Mtlx(X0, t_s, t_f, 1, Tg)
 	Time = []
@@ -196,10 +198,10 @@ def main():
 	#print("size of XX2")
 	#rows2, cols2 = XX2.shape
 	#print(rows2,cols2)
-#	plt.plot(T,XX1[:,0], label="Tg:393[K]")
-#	plt.plot(T,XX2[:,0], label="Tg:353[K]")
-#	plt.plot(T,XX3[:,0], label="Tg:323[K]")
-#	plt.plot(T,XX4[:,0], label="Tg:293[K]")
+	plt.plot(T,XX1[:,0], label="Tg:393[K]")
+	plt.plot(T,XX2[:,0], label="Tg:353[K]")
+	plt.plot(T,XX3[:,0], label="Tg:323[K]")
+	plt.plot(T,XX4[:,0], label="Tg:293[K]")
 	plt.plot(T,XX5[:,0], label="Tg:273[K]")
 	plt.xlabel('Time [s]')
 	plt.ylabel('Temperature [s]')
