@@ -5,15 +5,15 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import Simu0619
 
-m1 = 0.8  #Mass of Body [Kg]
+m1 = 0.6 + 0.05 * 5  #Mass of Body [Kg]
 #m1 = 0.7 + 2*6  #Mass of Body [Kg]
 m2 = 0.05 #Mass of Pad [Kg]
 g = 1.622  #Gravitational Acceleration [m/s^2] 
-k1 = 1060   #Bias Spring Coefficient [N/m]
+k1 = 3600   #Bias Spring Coefficient [N/m]
 c1 = 1  #Damping Coefficient of Spring [Ns/mm] 
 l0 = 0.1  #Natural Length of Bias Spring [m]
-k2 = 1000  #Spring Coefficient of the ground [N/mm]
-c2 = 1000 #Damping Coefficient [Ns/mm]
+k2 = 10000  #Spring Coefficient of the ground [N/mm]
+c2 = 100 #Damping Coefficient [Ns/mm]
 Z20 = 0.0  #Initial Position of Pad [mm]
 DZ = 0.05    #Initial Deflextion of Bias Spring [mm]
 h = 0.0001   #Interval of RK
@@ -211,6 +211,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 					print("Using func2")
 					t = t+h
 					n = n+1
+				#elif XX[n,2]<0 or XX[n,6]<0 or YY[n,1]<0 or YY[n,3]<0 or YY[n,5]<0:
 				elif XX[n,2]<0 or XX[n,6]<0:
 					break
 				else:
@@ -265,7 +266,8 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 					print("Using func4")
 					t = t+h
 					n = n+1
-				elif XX[n,2]<0 or XX[n,6]<0:
+				elif XX[n,2]<0 or XX[n,6]<0 or YY[n,1]<0 or YY[n,3]<0 or YY[n,5]<0:
+				#elif XX[n,2]<0 or XX[n,6]<0:
 					break
 				else:
 					Step = RK(XX[n], func6, l)
@@ -321,7 +323,8 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 					print("Using func2")
 					t = t+h
 					n = n+1
-				elif XX[n,2]<0 or XX[n,6]<0:
+				elif XX[n,2]<0 or XX[n,6]<0 or YY[n,1]<0 or YY[n,3]<0 or YY[n,5]<0:
+				#elif XX[n,2]<0 or XX[n,6]<0:
 					break
 				else:
 					Step = RK(XX[n], func6, l)
@@ -344,7 +347,7 @@ def Cal_Mtlx(X0, t_s, t_f, l):
 
 def main():
 	t_s = 0.0
-	t_f = 5.0 
+	t_f = 8.0 
 	#th0 = np.pi/4
 	X0 = [del_AE*np.cos(th0),0,del_AE*np.sin(th0),0,0,0,0,0]
 	#X0 = [P1[0],0,P1[1],0,0,0,0,0, P3[0], 0, P3[1], 0, P4[0], 0, P4[1], 0, P5[0], 0, P5[1], 0]
@@ -359,36 +362,41 @@ def main():
 	T = np.arange(0, row*h, h)
 	print("Length of T={0}".format(len(T)))
 
+	LimMax = 2.2
+	LimMaxY = 1.2
 	plt.figure()
 	plt.title('Hopping Distance X,Z w.r.t Time')
 	plt.xlabel('Time[s]')
 	plt.ylabel('Hopping Height[m]')
-	plt.plot(T,XX[:,0], label="x1")
-	plt.plot(T,XX[:,2], label="z1")
-	plt.plot(T,XX[:,4], label="x2")
-	plt.plot(T,XX[:,6], label="z2")
-	plt.plot(T,YY[:,0], label="P3x")
-	plt.plot(T,YY[:,1], label="P3y")
-	plt.plot(T,YY[:,2], label="P4x")
-	plt.plot(T,YY[:,3], label="P4y")
+	plt.plot(T,XX[:,0], label="Body_x")
+	plt.plot(T,XX[:,2], label="Body_z")
+	plt.plot(T,XX[:,4], label="Pad_x")
+	plt.plot(T,XX[:,6], label="Pad_z")
+	#plt.plot(T,YY[:,0], label="P3x")
+	#plt.plot(T,YY[:,1], label="P3y")
+	#plt.plot(T,YY[:,2], label="P4x")
+	#plt.plot(T,YY[:,3], label="P4y")
 	plt.xlim([0,T[row-1]])
+	#plt.ylim([0,LimMaxY+0.1])
 	plt.legend()
-	#plt.savefig("Soft_Slip_T-XZ.png")
+	plt.savefig("Three_Times_Cube_Soft_Slip_T-XZ.png")
 	
 	plt.figure()
 	plt.plot(XX[:,0],XX[:,2], label="Body")
 	plt.title('Hopping Trajectory Z w.r.t X')
-	plt.xlabel('Distance X[m]')
-	plt.xlabel('Time[s]')
+	plt.xlabel('Hopping Distance [m]')
 	plt.ylabel('Hopping Height[m]')
 	plt.xlim([0,XX[row-1,0]])
+	#plt.ylim([0,LimMaxY])
 	plt.legend()
-	plt.savefig("Soft_Slip_XZ.png")
+	plt.savefig("ThreeTimes_Cube_Soft_Slip_XZ.png")
 	#plt.show()
 
 	fig = plt.figure()
 	ax = fig.add_subplot(111, autoscale_on=False, xlim=(-0.05, XX[row-1,0]+0.1),\
 	                                              ylim=(-0.05, XX[row-1,0]+0.1))
+	#ax = fig.add_subplot(111, autoscale_on=False, xlim=(-0.05, LimMax),\
+	#                                              ylim=(-0.05, LimMax))
 	ax.grid()
 	
 	#line, = ax.plot([], [],  '-o', lw=3, color = 'blue')
@@ -408,7 +416,7 @@ def main():
 	    time_text.set_text('')
 	    return line1, line2, line3, line4, time_text
 	
-	TM_thin = 20	
+	TM_thin = 30	
 	def animate(i):
 	    thisx1 = [XX[i*TM_thin,0], XX[i*TM_thin,4]]
 	    thisy1 = [XX[i*TM_thin,2], XX[i*TM_thin,6]]
@@ -429,7 +437,7 @@ def main():
 	ani = animation.FuncAnimation(fig, animate, np.arange(1, len(T)/TM_thin),
 	                              interval=1, blit=False, init_func=init)
 	
-	#ani.save("Soft_Slip.gif", writer = 'imagemagick')
+	ani.save("ThreeTimes_Cube_Soft_Slip.gif", writer = 'imagemagick')
 	plt.show()
 if __name__ == '__main__':
 		main()

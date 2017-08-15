@@ -60,12 +60,12 @@ Yeild = 100
 #CHANGABLE PARAMETERS 
 m = 0.7 
 Theta = 90.0 
-number = 2 
-n = 15 
+number = 6 
+n = 10 
 D = 6.2  #Diameter of Coil[mm]
 d = 1.2  #Diameter of Wire[mm]
 solid_height = d*n ##solid height of SMA spring[mm]
-k = 1.06 
+k = 3.6 
 X0 = 100 
 X0_SMA = solid_height 
 #X0_SMA = 45             #Natural Height of SMA[mm]
@@ -223,8 +223,8 @@ while(delta_AE+LL*NN<=delta_ME):
 		Del=np.append(Del,np.array([[delta_AE+LL*NN]]), axis=0) 
 		NN = NN+1	
 		
-print(Del)
-print(N)
+#print(Del)
+#print(N)
 
 #fig, (axL, axR) = plt.subplots(ncols=2, figsize=(10,4))
 #axL.plot(del_m,Force, label="Martensite", color='black', linestyle=":")
