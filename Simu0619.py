@@ -47,12 +47,16 @@ rho = 6.5
 c = 440
 Af = 80
 Ms = 20
-Tau_s = 72.4 #MPa
-Tau_f = 114.0 #MPa
+#Tau_s = 72.4 #MPa Original Value
+Tau_s = 32.4 #MPa 
+#Tau_f = 114.0 #MPa Original Value
+Tau_f = 74.0 #MPa Original Value
 tau_ca = 550  #Yeilding sheer stress at Austenite [MPa]
 tau_cm = 290  #Yeilding sheer stress at Martensite [MPa]
-Ga = 22000
-Gm = 8000
+#Ga = 22000 #Original Value
+Ga = 16000
+#Gm = 8000 #Original Value
+Gm = 6000
 gamma_l = 0.05
 Yeild = 100
 
@@ -61,12 +65,12 @@ Yeild = 100
 m = 0.7 
 Theta = 45.0
 number = 2 
-n = 10 
+n =10 
 D = 6.2  #Diameter of Coil[mm]
 d = 1.2  #Diameter of Wire[mm]
 solid_height = d*n ##solid height of SMA spring[mm]
 k = 1.06 
-X0 = 100 
+X0 = 65.5 
 X0_SMA = solid_height 
 #X0_SMA = 45             #Natural Height of SMA[mm]
 N_PLOT_MAX = k*X0 
@@ -223,8 +227,8 @@ while(delta_AE+LL*NN<=delta_ME):
 		Del=np.append(Del,np.array([[delta_AE+LL*NN]]), axis=0) 
 		NN = NN+1	
 		
-print(Del)
-print(N)
+#print(Del)
+#print(N)
 
 #fig, (axL, axR) = plt.subplots(ncols=2, figsize=(10,4))
 #axL.plot(del_m,Force, label="Martensite", color='black', linestyle=":")
@@ -248,6 +252,7 @@ plt.xlim([0,X0])
 #plt.plot(F,delta)
 #plt.plot(F,delta_a)
 #plt.plot(F,delta_bi)
+plt.savefig("/Users/Takumax/Desktop/HopLeg_Property.png")
 plt.legend()
 plt.show()
 #
