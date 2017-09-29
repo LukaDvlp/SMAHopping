@@ -14,11 +14,11 @@ class Optimize():
 
 	def __init__(self):
 		self.N_init = 1
-		self.d_init = 1
+		self.d_init = 5
 		self.D_init = 1
-		self.n_init = 1
+		self.n_init = 2
 		self.k_init = 1
-		self.L_init = 1
+		self.L_init = 2
 		self.N = self.N_init
 		self.d = self.d_init
 		self.D = self.D_init
@@ -50,7 +50,7 @@ class Optimize():
 					while self.n <= self.n_fin:
 						while self.k <= self.k_fin:
 							while self.L <= self.L_fin:
-								self.Evaluate(self.BL, self.LL)
+								self.Evaluate()
 								self.L += 1
 							self.L = self.L_init
 							self.k += 1
@@ -65,21 +65,60 @@ class Optimize():
 		print Value
 		self.get_max(self.Result)
 	
-	def EF1(self,N,d,D,n,k,L): #Evaluate function 1
-		blue = (k*L-self.F/D*(1-self.A)*d**3)/(self.A*self.B*d**4/D**3*n+k)-k*L/(self.C*d**4/D**3*n + k)
-		Value = blue*(-(k/2+self.A*self.B/2*d**4/D**3/n)*blue + (k*L-self.F*(1-self.A)*d**3/D))
+	def EF1(self): #Evaluate function 1
+		Value = -self.k*(self.dl_A-self.L)*self.dl_M*0.5
 		return Value
 	
-	def EF2():
-		return 1
+	def EF2(self):
+		Fa = -self.k*(self.dl_A-self.L)
+		Value = (Fa-self.F1)*(self.dl_M-self.dl_A)*0.5 + self.F1*(self.dl_1-self.dl_A)*0.5
+		return Value
 
-	def EF3():
-		return 1
+	def EF3(self):
+		Fa = -self.k*(self.dl_A-self.L)
+		Value = (Fa-self.F1)*(self.dl_M-self.dl_A)*0.5 + (self.F1-self.F2)*(self.dl_M-self.dl_2)*0.5+(self.F2-self.F3)*(self.dl_2-self.dl_A)*0.5 + self.F3*(self.dl_1-self.dl_A)*0.5
+		return Value
 	
-	def Evaluate(self, BL, LL):
-		if 0 < self.BL:
-				arr = [[self.N,self.d,self.D,self.n,self.k,self.L,self.EF1(self.N,self.d,self.D,self.n,self.k,self.L)]]
+	def Evaluate(self):
+		self.dl_A = self.k*self.L/(self.N*self.Ga*self.d**4/(8*self.D**3*self.n)+self.k)
+		self.dl_Ay = np.pi*self.D**2*self.n/(self.Ga*self.d)*self.tau_ay
+		self.dl_1 = self.D**2*self.n/(self.Gm*self.d)*(np.pi*self.tau_s+self.Gm*self.d/(self.D**2*self.n)*self.dl_A)
+		self.dl_2 = self.D**2*self.n/(self.Gm*self.d)*(np.pi*self.tau_f+self.Gm*self.d/(self.D**2*self.n)*self.dl_A+np.pi*self.Gm*self.gamma_l)
+		self.dl_My = self.D**2*self.n/(self.Gm*self.d)*(np.pi*self.tau_my+self.Gm*self.d/(self.D**2*self.n)*self.dl_A+np.pi*self.Gm*self.gamma_l)
+		self.DEL_1 = (self.N*self.Gm*self.d**4/(8*self.D**3*self.n)*self.dl_A+self.k*self.L)/(self.N*self.Gm*self.d**4/(8*self.D**3*self.n)+self.k)
+		self.DEL_2 = (self.N*self.Gm*self.d**4/(8*self.D**3*self.n)*self.dl_A+self.k*self.L+self.N*np.pi*self.d**3*self.Gm*self.gamma_l/(8*self.D))/(self.N*self.Gm*self.d**4/(8*self.D**3*self.n)+self.k)
+		if self.DEL_1 < self.dl_1:
+				self.dl_M = (self.N*self.Gm*self.d**4/(8*self.D**3*self.n)*self.dl_A+self.k*self.L)/(self.N*self.Gm*self.d**4/(8*self.D**3*self.n)+self.k)
+				if CheckCondition():
+						E = EF1()
+				else:
+						E = 0
+				arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
 				self.Result = np.append(self.Result, np.array(arr), axis=0)
+				
+		elif self.dl_1 < self.DEL_1 and self.DEL_1 < self.dl_2:
+				F_s = self.N*np.pi*self.d**3*self.tau_s/(8*self.D)
+				F_f = self.N*np.pi*self.d**3*self.tau_f/(8*self.D)
+				self.dl_M = ((F_f-F_s)/(dl_2-dl_1)*dl_A -F_s +(F_f-F_s)/(dl_2-dl_1) + self.k*self.L)/((F_f-F_s)/(dl_2-dl_1)+self.k)
+				self.F1 = (F_f-F_s)/(dl_2-dl_1)*dl_A + F_s - (F_f-F_s)/(dl_2-dl_1)*dl_1
+				if CheckCondition():
+						E = EF2()
+				else:
+						E = 0
+				arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
+				self.Result = np.append(self.Result, np.array(arr), axis=0)
+
+		elif self.dl_2 < self.DEL_2:
+				self.dl_M = ((self.N*self.Gm*self.d**4*self.dl_A)/(8*self.D**3*self.n)+(self.N*np.pi*self.d**3*self.Gm*self.gamma_l)/(8*self.D)+self.k*self.L)/((self.N*self.Gm*self.d**4)/(8*self.D**3*self.n)+self.k)
+				F_s = self.N*np.pi*self.d**3*self.tau_s/(8*self.D)
+				F_f = self.N*np.pi*self.d**3*self.tau_f/(8*self.D)
+				self.F1 = -self.k*(self.dl_M-self.L)
+				self.F2 = self.N*np.pi*self.d**3*self.tau_f/(8*self.D)
+				self.F3 = (F_f-F_s)/(self.dl_2-self.dl_1)*self.dl_A + F_s - (F_f-F_s)/(self.dl_2-self.dl_1)*self.dl_1
+				if CheckCondition():
+						E = EF3()
+				else:
+						E = 0
 	
 	def get_max(self, Result):
 		index = Result[:,6].argmax()
@@ -91,11 +130,28 @@ class Optimize():
 		self.Gm = 6000
 		self.tau_s = 200
 		self.tau_f = 500
+		self.tau_ay = 200
+		self.tau_my = 500
 		self.gamma_l = 0.5
+		self.rho = 6.5
+		self.c = 440
+		self.Af = 80
+		self.Ms = 20
 		self.A = (self.tau_f-self.tau_s)/(self.tau_f-self.tau_s+self.Gm*self.gamma_l)
 		self.B = self.Gm/8
 		self.C = self.Ga/8
 		self.F = np.pi*self.tau_s/8
+		#Constraint Conditions
+		self.Ltc_max = 100 #Maximum of Latch
+		self.Bat_max = 100   #Maximum of Battery
+	
+	def CheckCondition(self):
+		Latch = -self.k*(self.dl_A-self.L) < self.Ltc_max
+		Battery = 6*self.N*self.rho*(np.pi)**2*(0.5*d)**2*self.D*self.n/1000*self.c/1000*(self.Af-self.Ms) < self.Bat_max
+		SpringIndex = 5 < self.D/self.d < 12
+		Yelding = dl_A < dl_Ay and dl_M < dl_My
+		MaxLength = np.pi*self.D*self.n > self.L
+		return Latch and Battery and SpringIndex and Yelding and MaxLength
 
 if __name__ == '__main__':
 	print "hello"
