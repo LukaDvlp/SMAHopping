@@ -13,12 +13,18 @@ class Optimize():
 	"""Optimize the evaluate function by brute-force search"""
 
 	def __init__(self):
-		self.N = 1
-		self.d = 1
-		self.D = 1
-		self.n = 1
-		self.k = 1
-		self.L = 1
+		self.N_init = 1
+		self.d_init = 1
+		self.D_init = 1
+		self.n_init = 1
+		self.k_init = 1
+		self.L_init = 1
+		self.N = self.N_init
+		self.d = self.d_init
+		self.D = self.D_init
+		self.n = self.n_init
+		self.k = self.k_init
+		self.L = self.L_init
 		self.N_fin = 3 
 		self.d_fin = 3  
 		self.D_fin = 3 
@@ -46,22 +52,22 @@ class Optimize():
 							while self.L <= self.L_fin:
 								self.Evaluate(self.BL, self.LL)
 								self.L += 1
-							self.L = 0
+							self.L = self.L_init
 							self.k += 1
-						self.k = 0
+						self.k = self.k_init
 						self.n += 1
-					self.n = 0
+					self.n = self.n_init
 					self.D += 1
-				self.D = 0 
+				self.D = self.D_init
 				self.d += 1
-			self.d = 0
+			self.d = self.d_init
 			self.N += 1	
 		print Value
 		self.get_max(self.Result)
 	
-	def EF1(self): #I need to modify from here
-		blue = (k*L-F/D*(1-A)*d**3)/(A*B*d**4/D**3*n+k)-k*L/(C*d**4/D**3*n + k)
-		Value = blue*(-(k/2+A*B/2*d**4/D**3/n)*blue + (k*L-F*(1-A)*d**3/D))
+	def EF1(self,N,d,D,n,k,L): #Evaluate function 1
+		blue = (k*L-self.F/D*(1-self.A)*d**3)/(self.A*self.B*d**4/D**3*n+k)-k*L/(self.C*d**4/D**3*n + k)
+		Value = blue*(-(k/2+self.A*self.B/2*d**4/D**3/n)*blue + (k*L-self.F*(1-self.A)*d**3/D))
 		return Value
 	
 	def EF2():
@@ -72,23 +78,24 @@ class Optimize():
 	
 	def Evaluate(self, BL, LL):
 		if 0 < self.BL:
-				self.Result = np.append(self.Result, np.array([[1,2,3,4,5,6,7]]), axis=0)
+				arr = [[self.N,self.d,self.D,self.n,self.k,self.L,self.EF1(self.N,self.d,self.D,self.n,self.k,self.L)]]
+				self.Result = np.append(self.Result, np.array(arr), axis=0)
 	
 	def get_max(self, Result):
 		index = Result[:,6].argmax()
 		print Result[index,:]
 
-	def initialise():
+	def initialise(self):
 		#Global constants
-		global Ga = 18000
-		global Gm = 6000
-		global tau_s = 200
-		global tau_f = 500
-		global gamma_l = 0.5
-		global A = (tau_f-tau_s)/(tau_f-tau_s+Gm*gamma_l)
-		global B = Gm/8
-		global C = Ga/8
-		global F = np.pi*tau_s/8
+		self.Ga = 18000
+		self.Gm = 6000
+		self.tau_s = 200
+		self.tau_f = 500
+		self.gamma_l = 0.5
+		self.A = (self.tau_f-self.tau_s)/(self.tau_f-self.tau_s+self.Gm*self.gamma_l)
+		self.B = self.Gm/8
+		self.C = self.Ga/8
+		self.F = np.pi*self.tau_s/8
 
 if __name__ == '__main__':
 	print "hello"
