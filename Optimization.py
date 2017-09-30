@@ -89,11 +89,11 @@ class Optimize():
 				self.dl_M = (self.N*self.Gm*self.d**4/(8*self.D**3*self.n)*self.dl_A+self.k*self.L)/(self.N*self.Gm*self.d**4/(8*self.D**3*self.n)+self.k)
 				if self.CheckCondition():
 						E = self.EF1()
+						arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
+						print arr
+						self.Result = np.append(self.Result, np.array(arr), axis=0)
 				else:
-						E = 0
-				arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
-				print arr
-				self.Result = np.append(self.Result, np.array(arr), axis=0)
+						pass
 				
 		elif self.dl_1 < self.DEL_1 and self.DEL_1 < self.dl_2:
 				F_s = self.N*np.pi*self.d**3*self.tau_s/(8*self.D)
@@ -102,11 +102,11 @@ class Optimize():
 				self.F1 = (F_f-F_s)/(self.dl_2-self.dl_1)*self.dl_A + F_s - (F_f-F_s)/(self.dl_2-self.dl_1)*self.dl_1
 				if self.CheckCondition():
 						E = self.EF2()
+						arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
+						print arr
+						self.Result = np.append(self.Result, np.array(arr), axis=0)
 				else:
-						E = 0
-				arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
-				print arr
-				self.Result = np.append(self.Result, np.array(arr), axis=0)
+						pass
 
 		elif self.dl_2 < self.DEL_2:
 				self.dl_M = ((self.N*self.Gm*self.d**4*self.dl_A)/(8*self.D**3*self.n)+(self.N*np.pi*self.d**3*self.Gm*self.gamma_l)/(8*self.D)+self.k*self.L)/((self.N*self.Gm*self.d**4)/(8*self.D**3*self.n)+self.k)
@@ -117,11 +117,11 @@ class Optimize():
 				self.F3 = (F_f-F_s)/(self.dl_2-self.dl_1)*self.dl_A + F_s - (F_f-F_s)/(self.dl_2-self.dl_1)*self.dl_1
 				if self.CheckCondition():
 						E = self.EF3()
+						arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
+						print arr
+						self.Result = np.append(self.Result, np.array(arr), axis=0)
 				else:
-						E = 0
-				arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
-				print arr
-				self.Result = np.append(self.Result, np.array(arr), axis=0)
+						pass
 	
 	def get_max(self, Result):
 		index = Result[:,6].argmax()
