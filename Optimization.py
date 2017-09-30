@@ -49,17 +49,17 @@ class Optimize():
 						while self.k <= self.k_fin:
 							while self.L <= self.L_fin:
 								self.Evaluate()
-								self.L += 1
+								self.L += self.L_spn 
 							self.L = self.L_init
-							self.k += 1
+							self.k += self.k_spn
 						self.k = self.k_init
-						self.n += 1
+						self.n += self.n_spn
 					self.n = self.n_init
-					self.D += 1
+					self.D += self.D_spn
 				self.D = self.D_init
-				self.d += 1
+				self.d += self.d_spn
 			self.d = self.d_init
-			self.N += 1	
+			self.N += self.N_spn
 		print Value
 		self.get_max(self.Result)
 	
