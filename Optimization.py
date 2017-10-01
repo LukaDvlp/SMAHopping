@@ -35,8 +35,8 @@ class Optimize():
 		self.d_spn = 0.1
 		self.D_spn = 0.5
 		self.n_spn = 1
-		self.k_spn = 0.1
-		self.L_spn = 2
+		self.k_spn = 0.5
+		self.L_spn = 5
 		self.Result = np.empty((0, 7), float)
 		self.initialise()
 
