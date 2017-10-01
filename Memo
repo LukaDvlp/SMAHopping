@@ -1,6 +1,6 @@
-del_AE = Simu0619.delta_AE / 1000
-del_s = Simu0619.delta_s / 1000
-del_ME = Simu0619.delta_ME / 1000
-F_s = Simu0619.F_s 
-A = 1/Simu0619.A * 1000 
+	def get_max(self, Result):
+		index = Result[:,6].argmax()
+		print Result[index,:]
 
+	def getResult(self): #modify from here
+		get_max(self.Small)

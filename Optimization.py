@@ -16,9 +16,9 @@ class Optimize():
 		self.N_init = 1
 		self.d_init = 0.8
 		self.D_init = 5
-		self.n_init = 3
+		self.n_init = 5
 		self.k_init = 0.8
-		self.L_init = 60
+		self.L_init = 80
 		self.N = self.N_init
 		self.d = self.d_init
 		self.D = self.D_init
@@ -30,13 +30,14 @@ class Optimize():
 		self.D_fin = 12
 		self.n_fin = 20
 		self.k_fin = 6.0 
-		self.L_fin = 200 
+		self.L_fin = 150 
 		self.N_spn = 1
 		self.d_spn = 0.1
-		self.D_spn = 0.5
-		self.n_spn = 1
+		self.D_spn = 1
+		self.n_spn = 2
 		self.k_spn = 0.5
-		self.L_spn = 5
+		self.L_spn = 10
+		self.SmallResult = np.empty((0, 7), float)
 		self.Result = np.empty((0, 7), float)
 		self.initialise()
 
@@ -58,6 +59,8 @@ class Optimize():
 					self.D += self.D_spn
 				self.D = self.D_init
 				self.d += self.d_spn
+			self.getResult(self.SmallResult)
+			self.SmallResult = np.empty((0,7),float)
 			self.d = self.d_init
 			self.N += self.N_spn
 		print Value
@@ -91,7 +94,7 @@ class Optimize():
 						E = self.EF1()
 						arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
 						print arr
-						self.Result = np.append(self.Result, np.array(arr), axis=0)
+						self.SmallResult = np.append(self.SmallResult, np.array(arr), axis=0)
 				else:
 						pass
 				
@@ -104,7 +107,7 @@ class Optimize():
 						E = self.EF2()
 						arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
 						print arr
-						self.Result = np.append(self.Result, np.array(arr), axis=0)
+						self.SmallResult = np.append(self.SmallResult, np.array(arr), axis=0)
 				else:
 						pass
 
@@ -119,13 +122,24 @@ class Optimize():
 						E = self.EF3()
 						arr = [[self.N,self.d,self.D,self.n,self.k,self.L,E]]
 						print arr
-						self.Result = np.append(self.Result, np.array(arr), axis=0)
+						self.SmallResult = np.append(self.SmallResult, np.array(arr), axis=0)
 				else:
 						pass
 	
 	def get_max(self, Result):
 		index = Result[:,6].argmax()
 		print Result[index,:]
+
+	def getResult(self, SmallResult): #modify from here
+		index = SmallResult[:,6].argmax()
+		#print index
+		#print "行列の大きさ:", SmallResult.shape
+		#print "取り出したもの:", SmallResult[index,:]
+		#print "加える要素のサイズ:", SmallResult[index,:].shape
+		arr = [SmallResult[index,:]]
+		#print "Resultのサイズ:", self.Result.shape
+		self.Result = np.append(self.Result,np.array(arr),axis=0) 
+
 
 	def initialise(self):
 		#Global constants
