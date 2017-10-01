@@ -8,6 +8,7 @@
 #--------------------------------------------
 #
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Optimize():
 	"""Optimize the evaluate function by brute-force search"""
@@ -39,6 +40,7 @@ class Optimize():
 		self.L_spn = 10
 		self.SmallResult = np.empty((0, 7), float)
 		self.Result = np.empty((0, 7), float)
+		self.keydex = 1
 		self.initialise()
 
 	def	BruteSearch(self):
@@ -60,6 +62,9 @@ class Optimize():
 				self.D = self.D_init
 				self.d += self.d_spn
 			self.getResult(self.SmallResult)
+			#plt.plot(self.SmallResult)
+			#plt.savefig("SmallResultNo{0}".format(self.keydex))
+			#self.keydex += 1
 			self.SmallResult = np.empty((0,7),float)
 			self.d = self.d_init
 			self.N += self.N_spn
@@ -175,4 +180,7 @@ if __name__ == '__main__':
 	Body = Optimize()
 	Body.BruteSearch()
 	print "行列の大きさ:", Body.Result.shape
+	plt.plot(Body.Result)
+	plt.savefig("Optimization")
+	plt.show()
 
