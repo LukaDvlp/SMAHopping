@@ -35,8 +35,8 @@ class Optimize():
 		self.N_spn = 1
 		self.d_spn = 0.1
 		self.D_spn = 1
-		self.n_spn = 2
-		self.k_spn = 0.5
+		self.n_spn = 1
+		self.k_spn = 0.2
 		self.L_spn = 10
 		self.SmallResult = np.empty((0, 7), float)
 		self.Result = np.empty((0, 7), float)
@@ -136,14 +136,20 @@ class Optimize():
 		print Result[index,:]
 
 	def getResult(self, SmallResult): #modify from here
-		index = SmallResult[:,6].argmax()
+		if SmallResult[:,6].size == 0:
+			arr = [[0,0,0,0,0,0,0]]	
+			self.Result = np.append(self.Result,np.array(arr),axis=0) 
+		else:
+			index = SmallResult[:,6].argmax()
+			arr = [SmallResult[index,:]]
+			self.Result = np.append(self.Result,np.array(arr),axis=0) 
 		#print index
 		#print "行列の大きさ:", SmallResult.shape
 		#print "取り出したもの:", SmallResult[index,:]
 		#print "加える要素のサイズ:", SmallResult[index,:].shape
-		arr = [SmallResult[index,:]]
+		#arr = [SmallResult[index,:]]
 		#print "Resultのサイズ:", self.Result.shape
-		self.Result = np.append(self.Result,np.array(arr),axis=0) 
+		#self.Result = np.append(self.Result,np.array(arr),axis=0) 
 
 
 	def initialise(self):
@@ -165,12 +171,12 @@ class Optimize():
 		self.F = np.pi*self.tau_s/8
 		#Constraint Conditions
 		self.Ltc_max = 200 #Maximum of Latch
-		self.Bat_max = 4400   #Maximum of Battery
+		self.Bat_max = 400   #Maximum of Battery
 		self.Brho = 7.85*10**(-3) #Density of Bias Spring
 		self.BG = 78500 #Sheer young modulus of Bias spring
 		self.BL = 30 #Natural length of Bias spring
 		self.BD = 12 #Diameter of Bias spring coil
-		self.Na = 25 #Diameter of Bias spring coil
+		self.Na = 20 #Diameter of Bias spring coil
 	
 	def CheckCondition(self):
 		Latch = -self.k*(self.dl_A-self.L) < self.Ltc_max
@@ -178,14 +184,15 @@ class Optimize():
 		SpringIndex = 5 < self.D/self.d < 12
 		Yelding = self.dl_A < self.dl_Ay and self.dl_M < self.dl_My
 		MaxLength = np.pi*self.D*self.n > self.L
-		self.Bd = np.power(8*self.k*self.BD**3*self.Na/self.BG, 1.0/5.0)
+		self.Bd = np.power(8*self.k*self.BD**3*self.Na/self.BG, 1.0/4.0)
 		BiasSpringMass = self.Brho*self.BD*self.Bd*self.Na*np.pi**2
-		BiasSpringMASS = BiasSpringMass <= 30
-		print "Bd={0}".format(self.Bd)
-		print "BiasSpringMass={0}".format(BiasSpringMass)
-		print "self.Na={0}".format(self.Na)
-		print "self.Bd*self.Na={0}".format(self.Bd*self.Na)
-		return Latch and Battery and SpringIndex and Yelding and MaxLength and BiasSpringMASS
+		BiasSpringMASS = BiasSpringMass <= 50
+		#print "Bd={0}".format(self.Bd)
+		#print "BiasSpringMass={0}".format(BiasSpringMass)
+		#print "self.Na={0}".format(self.Na)
+		#print "self.Bd*self.Na={0}".format(self.Bd*self.Na)
+		DeformLength = self.L - self.dl_A <= 50
+		return Latch and Battery and SpringIndex and Yelding and MaxLength and BiasSpringMASS and DeformLength
 
 if __name__ == '__main__':
 	print "hello"

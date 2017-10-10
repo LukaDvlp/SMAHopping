@@ -64,13 +64,13 @@ Yeild = 100
 #CHANGABLE PARAMETERS 
 m = 0.7 
 Theta = 45.0
-number = 2 
-n = 11
+number = 5 
+n =9 
 D = 5.0  #Diameter of Coil[mm]
-d = 0.9  #Diameter of Wire[mm]
+d = 0.8 #Diameter of Wire[mm]
 solid_height = d*n ##solid height of SMA spring[mm]
-k = 0.8 
-X0 = 150 
+k = 2.2 
+X0 = 80 
 X0_SMA = solid_height 
 #X0_SMA = 45             #Natural Height of SMA[mm]
 N_PLOT_MAX = k*X0 
@@ -95,12 +95,12 @@ delta_f = A*F_f + np.pi*D**2*n/d*gamma_l   #Unit of delta_f is delta
 #xi = 0.5*np.cos(np.pi/(tau_s-tau_f)*(tau-tau_f)) + 0.5
 #F_ = np.pi*d**3/8/D*Gm*gamma_l*xi 
 #F_ME = (X0-H-X0_SMA)/(A+1/k)
-F_ME = k*X0-k*delta_ME 
+#F_ME = k*X0-k*delta_ME 
 F_AE = (X0-X0_SMA)/(B+1/k)
-delta_ME = -F_ME/k + X0 #Unit of delta_ME is X
+#delta_ME = -F_ME/k + X0 #Unit of delta_ME is X
 delta_AE = -F_AE/k + X0 #Unit of delta_AE is X
 strain_a = (delta_AE-X0_SMA)/X0_SMA*100 #Strain of Austenite SMA
-strain_m = (delta_ME-X0_SMA)/X0_SMA*100 #Strain of Martensite SMA
+#strain_m = (delta_ME-X0_SMA)/X0_SMA*100 #Strain of Martensite SMA
 strain_bi = (X0-delta_AE)/X0*100        #Strain of Bias Spring
 L_max_a = np.pi*D*n      #Maximum Length of Austenite
 L_max_m = np.pi*D*n*1.06 #Maximum Length of Martensite
@@ -130,7 +130,7 @@ print ("delta_s = %f[mm], delta_f = %f[mm]" %(delta_s,delta_f))
 print("F_ME=%f, F_AE=%f" %(F_ME,F_AE))
 print("delta_ME=%f, delta_AE=%f, deformation=%f[mm]" %(delta_ME,delta_AE,\
 delta_ME-delta_AE))
-print ("Strain_a:%f[per], Strain_m:%f[per]" %(strain_a, strain_m))
+#print ("Strain_a:%f[per], Strain_m:%f[per]" %(strain_a, strain_m))
 print ("L_max_a:%f[mm], L_max_m:%f[mm]" %(L_max_a, L_max_m))
 print ("Released energy: %f[mJ], Required energy:%f[J]" %(E,Q))
 print ("Distance_X=%f[mm], Distance_Y=%f[mm]" %(distance_X, distance_Y))
@@ -252,7 +252,7 @@ plt.xlim([0,X0])
 #plt.plot(F,delta)
 #plt.plot(F,delta_a)
 #plt.plot(F,delta_bi)
-plt.savefig("/Users/Takumax/Desktop/HopLeg_Property.png")
+plt.savefig("/Users/Takumax/Desktop/HopLeg_Property2.png")
 plt.legend()
 plt.show()
 #
